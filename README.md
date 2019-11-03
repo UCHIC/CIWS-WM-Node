@@ -9,3 +9,11 @@ The 'Firmware' directory holds the firmware for the data acquisition device, or 
 
 This computational development is still under development.
 
+## Cyberinfrastructure for Intelligent Water Supply (CIWS) 
+
+CIWS is a project funded by the U.S. National Science Foundation to develop cyberinfrastructure for smart water metering and high resolution water-use data collection. We are developing systems for high resolution residential water consumption data collection, processing and analysis.
+
+## Sponsors and Credits
+
+This work was supported by National Science Foundation Grant [CBET 1552444](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1552444). Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.
+

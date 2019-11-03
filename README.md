@@ -1,5 +1,4 @@
 # CIWS-WM-Node
-Hardware and software for a smart water meter computational node
 
 This repository contains hardware and software designs for a computationally-enabled water meter datalogger. The hardware is made up of two parts. One part is a Raspberry Pi embedded computer that serves as the computational resource. The Raspberry Pi is coupled with a data acquisition device that is based on an Arduino Pro and is similar to our simplified datalogger for magnetically-driven residential water meters.
 

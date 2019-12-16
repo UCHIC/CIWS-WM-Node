@@ -14,7 +14,7 @@
 
 #define usartReceiveComplete() ((UCSR0A&0x80)==0x80)              // Check to see if a new byte has been received
 
-void updateReport(char* report, Date_t* Date, State_t* State);    // Update information regarding System State and Date/Time based on the new report (9 received bytes)
+void updateReport(unsigned char* report, Date_t* Date, State_t* State);    // Update information regarding System State and Date/Time based on the new report (9 received bytes)
 
 void powerRPiON(void);                                            // Power up the host computer (designed for a Raspberry Pi). Also enables host computer SPI bus and switches microcontroller chip select pin to input in order to avoid bus contention
 void powerRPiOFF(void);                                           // Power off the host computer

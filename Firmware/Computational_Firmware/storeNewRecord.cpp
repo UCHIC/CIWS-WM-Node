@@ -61,7 +61,7 @@ void writeDateAndTime(Date_t* Date)
   dateTimeArray[6] = Date->days;                      // Days
   dateTimeArray[7] = Date->hours;                     // Hours
   dateTimeArray[8] = Date->minutes;                   // Minutes
-  dateTimeArray[9] = Date->seconds + 4;               // Seconds + 4: The first data byte will be 4 seconds after the timestamp for logging start
+  dateTimeArray[9] = Date->seconds;                   // Seconds
 
   spiSelectSlave();                                   // Select the EEPROM chip
   spiTransceive(writeEnable, 1);                      // Send the Write Enable instruction
@@ -72,7 +72,7 @@ void writeDateAndTime(Date_t* Date)
   spiReleaseSlave();                                  // De-Select the EEPROM chip
 }
 
-void storeNewRecord(State_t* State)                   // Stores a new record in either the EEPROM chip or the romDataBuffer array.
+void storeNewRecord(State_t* State, Date_t* Date, Date_t* Date_Snapshot)   // Stores a new record in either the EEPROM chip or the romDataBuffer array.
 {
   delay(10);                                            // delay for 10 ms in case the EEPROM is writing.
   unsigned char finalCount;                             // Holds the final count for the four-second sample.
@@ -82,7 +82,7 @@ void storeNewRecord(State_t* State)                   // Stores a new record in 
   unsigned long pageBoundary = 0;                       // This variable holds a page boundary address if one is about to be crossed (Bad ju-ju, don't want that)
   unsigned long i;                                      // This variable is used for looping over all the addresses about to be written when checking for page boundaries.
 
-  unsigned char writeEnable[1];                       // writeEnable[0] is a copy of wrenInstr. Since spiTranceive overwrites input data, can't just pass a pointer to wrenInstr.
+  unsigned char writeEnable[1];                         // writeEnable[0] is a copy of wrenInstr. Since spiTranceive overwrites input data, can't just pass a pointer to wrenInstr.
   writeEnable[0] = wrenInstr;
 
   finalCount = State->pulseCount;                       // Assign current pulseCount to finalCount
@@ -92,6 +92,12 @@ void storeNewRecord(State_t* State)                   // Stores a new record in 
   
   if(State->romFree)                                  // If the microcontroller has control over the EEPROM chip,
   {
+    if(romDataBufferIndex > 0)                          // If romDataBufferIndex is greater than zero, then there is data in the romDataBuffer that must be written to the EEPROM and the record must start over.
+    {
+      State->romAddr = HEADER_SIZE;                       // Restart the record by setting the EEPROM address to its starting address just after the header.
+      writeDateAndTime(Date_Snapshot);                    // Write the new starting date and time to the EEPROM.
+    }
+    
     spiSelectSlave();                                   // Select the EEPROM chip
     spiTransceive(writeEnable, 1);                      // Send the Write Enable instruction
     spiReleaseSlave();                                  // De-Select the EEPROM chip (or writing will not be enabled)
@@ -113,8 +119,9 @@ void storeNewRecord(State_t* State)                   // Stores a new record in 
 
     spiTransceive(data, 4);                             // Send the write instruction and the address to write to
 
-    if(romDataBufferIndex > 0)                          // If romDataBufferIndex is greater than zero, then there is data in the romDataBuffer that must be written to the EEPROM //TODO: Check for page boundary
+    if(romDataBufferIndex > 0)                          // If romDataBufferIndex is greater than zero, then there is data in the romDataBuffer that must be written to the EEPROM
     {
+      
       for(i = romAddr; i < romDataBufferIndex; i++)       // Look at all the addresses we're about to write to
       {
         if(i % 256 == 0)                                    // If any of them are the beginning of a new page
@@ -159,7 +166,7 @@ void storeNewRecord(State_t* State)                   // Stores a new record in 
       }
 
       State->romAddr += romDataBufferIndex;               // Update the ROM address
-      State->recordNum += romDataBufferIndex;             // Update the record number
+      State->recordNum = romDataBufferIndex + 1;          // Reset the record number (+1 because romDataBufferIndex starts at zero, while recordNum starts at 1).
       romDataBufferIndex = 0;                             // Reset the romDataBufferIndex to zero
       romAddr = State->romAddr;
       if(romAddr % 256 == 0)

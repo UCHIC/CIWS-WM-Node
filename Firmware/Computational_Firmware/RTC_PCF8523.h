@@ -54,5 +54,6 @@ typedef struct
 
 byte rtcTransfer(byte reg, byte flag, byte value); // TWI transfer with RTC
 void loadDateTime(Date_t* Date);                   // Load Date_t struct with Date and Time info from the RTC.
+void copyDateTime(Date_t* Date1, Date_t* Date2);   // Copy Date1 to Date2.
 
 #endif

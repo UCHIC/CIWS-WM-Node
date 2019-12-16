@@ -73,16 +73,6 @@ bool mag_init()
   // Declare and initialize variables
   int8_t receivedBytes[19];
   int8_t myBuffer;
-  //byte const initializerForCTRL_REG1
-  
-  // mag_transfer(&receivedBytes, STATUS_REG, 1 /* byte */, MAG_READ);
-  
-  // Loop While sensor is not ready
-  //while (/* code to read the status register goes here */ mag_transfer) 
-  //{
-  //  delay(5);  // Do nothing for a little time to cause a delay (5 ms is just a guess)
-  //    // Continue reading status register      
-  //} // EndLoop
 
   // Store the configuration value for Control register 1 into buffer
   //myBuffer = 0x72;              // 0b0 11 100 1 0 == 0x72

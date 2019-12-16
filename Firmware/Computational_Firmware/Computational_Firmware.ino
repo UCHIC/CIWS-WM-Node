@@ -89,8 +89,9 @@
 
 volatile State_t State;             // System State structure
 volatile Date_t Date;               // System Time and Date structure
+volatile Date_t Date_Snapshot;      //
 volatile SignalState_t SignalState; // Struct containing signal data from magnetometer
-volatile char report[9];            // Array containing system information. The report is passed between the microcontroller and the host computer (designed for a Raspberry Pi)
+volatile unsigned char report[9];   // Array containing system information. The report is passed between the microcontroller and the host computer (designed for a Raspberry Pi)
 volatile char reportIndex = 0;      // current index of the above report
 bool countDown = false;             // Tells program to count every four seconds until it's time to power off the host computer.
 char powerOff_Count = 0;            // Stores the count as described above.
@@ -142,6 +143,7 @@ void loop()
   if((((PIND & 0x20) == 0x00) && !State.RPiON) || (State.romAddr > (BUFFER_MAX + HEADER_SIZE))) // If (button is pressed and the host computer is off) OR (The ROM address is greater than the data length)
   {
     State.RPiON = true;                                                               // Let the rest of the program know that the host computer is on
+    copyDateTime(&Date, &Date_Snapshot);                                              // Get a timestamp for the data to be put in the ROM buffer
     State.romAddr = HEADER_SIZE;                                                      // Reset the ROM address
     State.romFree = false;                                                            // Let the rest of the program know that the EEPROM chip is not accessible
     writeDataSize(&State);                                                            // Store the number of data bytes in the first three bytes of the EEPROM chip for the host computer
@@ -160,9 +162,7 @@ void loop()
     {
       unsigned char temp = UART_Receive();  // Store new byte
       UART_Transmit(report[reportIndex]);   // Transmit next byte
-      if(temp != 0xFF)                      // If the received byte is not 0xFF (0xFF means to not overwrite the byte in the report)
-        report[reportIndex] = temp;           // Update the current report byte with the newly received byte
-      
+      report[reportIndex] = temp;           // Update the current report byte with the newly received byte  
       if((++reportIndex) > 8)               // If the report has been filled up
       {
         reportIndex = 0;                      // Reset the report index
@@ -229,7 +229,7 @@ void loop()
     report[4] = Date.minutes;
     report[5] = Date.seconds;
     if(State.logging)                                   // If the microcontroller is logging data
-      storeNewRecord(&State);                             // Store a new record
+      storeNewRecord(&State, &Date, &Date_Snapshot);    // Store a new record
     if(countDown)                                       // If it's time to count to the host computer's shutdown time
       powerOff_Count += 1;                                // Increment the counter
   }

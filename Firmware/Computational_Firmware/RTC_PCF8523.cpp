@@ -122,3 +122,13 @@ void loadDateTime(Date_t* Date)
 
   return;
 }
+
+void copyDateTime(Date_t* Date1, Date_t* Date2)
+{
+  Date2->years   = Date1->years;
+  Date2->months  = Date1->months;
+  Date2->days    = Date1->days;
+  Date2->hours   = Date1->hours;
+  Date2->minutes = Date1->minutes;
+  Date2->seconds = Date1->seconds;
+}

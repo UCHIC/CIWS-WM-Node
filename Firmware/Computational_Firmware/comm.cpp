@@ -2,45 +2,76 @@
 
 char decimalToBCD(char decVal);
 
-void updateReport(char* report, Date_t* Date, State_t* State)
+void updateReport(unsigned char* report, Date_t* Date, State_t* State)
 {
-  if(report[0] != 0xFF)                           // If the new value for years is not 0xFF
+  if(report[0] == 0xFF)                           // If the new value is 0xFF
+  {
+    report[0] = Date->years;                            // Write back the old value
+  }
+  else                                            // If the new value for years is not 0xFF
   {
     Date->years = report[0];                            // Update the new year
     char years_BCD = decimalToBCD(Date->years);         // Convert to RTC format (BCD)
     rtcTransfer(reg_Years, WRITE, years_BCD);           // Send the new date and time to the RTC
   }
-  if(report[1] != 0xFF)                           // If the new value for months is not 0xFF
+  if(report[1] == 0xFF)                           // If the new value is 0xFF
+  {
+    report[1] = Date->months;                           // Write back the old value
+  }
+  else                                            // If the new value for months is not 0xFF
   {
     Date->months = report[1];                           // Update the new month
     char months_BCD = decimalToBCD(Date->months);       // Convert to RTC format (BCD)
     rtcTransfer(reg_Months, WRITE, months_BCD);         // Send the new date and time to the RTC
   }
-  if(report[2] != 0xFF)                           // If the new value for days is not 0xFF
+  if(report[2] == 0xFF)                           // If the new value is 0xFF
+  {
+    report[2] = Date->days;                             // Write back the old value
+  }
+  else                                            // If the new value for days is not 0xFF
   {
     Date->days = report[2];                             // Update the new day
     char days_BCD = decimalToBCD(Date->days);           // Convert to RTC format (BCD)
     rtcTransfer(reg_Days, WRITE, days_BCD);             // Send the new date and time to the RTC
   }
-  if(report[3] != 0xFF)                           // If the new value for hours is not 0xFF
+  if(report[3] == 0xFF)                           // If the new value is 0xFF
+  {
+    report[3] = Date->hours;                            // Write back the old value
+  }
+  else                                            // If the new value for hours is not 0xFF
   {
     Date->hours = report[3];                            // Update the new hour
     char hours_BCD = decimalToBCD(Date->hours);         // Convert to RTC format (BCD)
     rtcTransfer(reg_Hours, WRITE, hours_BCD);           // Send the new date and time to the RTC
   }
-  if(report[4] != 0xFF)                           // If the new value for minutes is not 0xFF
+  if(report[4] == 0xFF)                           // If the new value is 0xFF
+  {
+    report[4] = Date->minutes;                          // Write back the old value
+  }
+  else                                            // If the new value for minutes is not 0xFF
   {
     Date->minutes = report[4];                          // Update the new minute
     char minutes_BCD = decimalToBCD(Date->minutes);     // Convert to RTC format (BCD)
     rtcTransfer(reg_Minutes, WRITE, minutes_BCD);       // Send the new date and time to the RTC
   }
-  if(report[5] != 0xFF)                           // If the new value for seconds is not 0xFF
+  if(report[5] == 0xFF)                           // If the new value is 0xFF
+  {
+    report[5] = Date->seconds;                          // Write back the old value
+  }
+  else                                            // If the new value for seconds is not 0xFF
   {
     Date->seconds = report[5];                          // Update the new second
     char seconds_BCD = decimalToBCD(Date->seconds);     // Convert to RTC format (BCD)
     rtcTransfer(reg_Seconds, WRITE, seconds_BCD);       // Send the new date and time to the RTC
   }
-  if(report[8] != 0xFF)                           // If the new value for logging is not 0xFF
+  if(report[8] == 0xFF)                           // If the new value is 0xFF
+  {
+    if(State->logging == true)
+      report[8] = 1;
+    else
+      report[8] = 0;
+  }
+  else                                            // If the new value for logging is not 0xFF
   {
     if((report[8] == 1) && !State->logging)       // If the new value is 1
     {
@@ -56,6 +87,19 @@ void updateReport(char* report, Date_t* Date, State_t* State)
       EIMSK &= ~(1 << INT0);                            // Disable Sensor interrupt
       State->logging = false;                           // Let the rest of the program know that the microcontroller is no longer logging
       State->readMag = false;                           // Let the rest of the program know that it does not need to read the magnetometer data
+      spiOff();                                         // Set all SPI pins as inputs to avoid bus contention
+      PORTB &= ~0x01;                                   // Enable Bus to host computer
+      delay(1);
+      while((PINB & 0x02) == 0x02)                      // Wait until the Raspberry Pi asserts the CS line      // Waiting for this sequence will tell you that the Raspberry Pi is done reading the EEPROM
+      {
+        delay(1);
+      }
+      while((PINB & 0x02) == 0x00)                      // Wait until the Raspberry Pi de-asserts the CS line
+      {
+        delay(1);
+      }
+      PORTB |= 0x01;                                    // Disable Bus to host computer
+      spiInit();                                        // Re-initialize SPI module
     }
   }
  

@@ -97,7 +97,7 @@ static PyObject* loadData(PyObject* self, PyObject* args)
 		recordNum = BUFFER_MAX;
 	}
 
-	unsigned int lastIndex = recordNum + 12;		// lastIndex points to the last record stored in data[]
+	unsigned int lastIndex = recordNum + HEADER_SIZE + 4;	// lastIndex points to the last record stored in data[]
 	if(lastIndex > dataSize)
 		lastIndex = dataSize;
 
@@ -190,11 +190,116 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 
 	PyObject* next = PyIter_Next(Iterator);				// Each next holds the data from the current DataList index.
 
+	unsigned int index = 0;
+	int month = 0;
+	int day = 0;
+	int year = 0;
+	int hour = 0;
+	int minute = 0;
+	int second = 0;
+	const int deltaSec = 4;
+	long data;
+	int recordNum = 1;
+
 	while(next != NULL)						// Print each value to the output file.
 	{
-		fprintf(dataOut, "%ld\n", PyInt_AsLong(next));
+		data = PyInt_AsLong(next);
+		if (index < 7)
+		{
+		/*	if (index == 0)
+				fprintf(dataOut, "Data Size: %ld\n", data);*/
+			if (index == 1)
+			{
+				year = data;
+			}
+			if (index == 2)
+			{
+				month = data;
+			}
+			if (index == 3)
+			{
+				day = data;
+			}
+			if (index == 4)
+			{
+				hour = data;
+			}
+			if (index == 5)
+			{
+				minute = data;
+			}
+			if (index == 6)
+			{
+				fprintf(dataOut, "Time,Record,Pulses\n");
+				second = data;
+			}
+		}
+		else
+		{
+			fprintf(dataOut, "\"%02d-%02d-%02d %02d:%02d:%02d\",%d,%ld\n",year, month, day, hour, minute, second, recordNum, data);
+			recordNum += 1;
+			second += deltaSec;
+			if (second >= 60)
+			{
+				second = second % 60;
+				minute += 1;
+			}
+			if (minute >= 60)
+			{
+				minute = minute % 60;
+				hour += 1;
+			}
+			if (hour >= 24)
+			{
+				hour = hour % 24;
+				day += 1;
+			}
+			if (day >= 31)
+			{
+				day = 1;
+				month += 1;
+			}
+			if (day >= 30)
+			{
+				if((month == 9) || (month == 4) || (month == 6) || (month == 11))	// If Month with thirty days
+				{
+					day = 1;
+					month += 1;
+				}
+			}
+			if (day >= 29)
+			{
+				if(month == 2)	// If February
+				{
+					day = 1;
+					month += 1;
+				}
+			}
+			if (day >= 28)
+			{
+				if(month ==2)	// Condition: If February and Not Leap Year
+				{
+					if(year % 4 == 0)
+					{
+						if((year % 100 != 0) || (year % 400 == 0))
+						{
+							day = 1;
+							month += 1;
+						}
+					}
+				}
+			}
+			if (month > 12)
+			{
+				month = 1;
+				year += 1;
+			}
+		}
 		next = PyIter_Next(Iterator);
+		index += 1;
 	}
+
+	fclose(dataOut);
 
 	return Py_None;
 }

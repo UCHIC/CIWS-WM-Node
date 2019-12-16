@@ -28,6 +28,8 @@ if [ $? -eq 0 ]; then
 	echo "Disabled Serial Console. Reboot required in order to complete setup."
 fi
 
+sed -i -e 's/exit 0//g' /etc/rc.local
+
 echo "Checking /etc/rc.local to disable serial-getty service..."
 
 grep -q -F 'sudo systemctl disable serial-getty@ttyS0.service' /etc/rc.local
@@ -36,6 +38,14 @@ if [ $? -ne 0 ]; then
 	echo 'sudo systemctl disable serial-getty@ttyS0.service' >> /etc/rc.local
 	echo "Disabled serial-getty service. Reboot required in order to complete setup."
 fi
+
+grep -q -F 'sudo python /home/pi/Software/LoggerAutoRun.py &' /etc/rc.local
+if [ $? -ne 0 ]; then
+	echo 'sudo python /home/pi/Software/LoggerAutoRun.py &' >> /etc/rc.local
+	echo "Set rc.local to run LoggerAutoRun.py. Reboot required in order to complete setup."
+fi
+
+echo 'exit 0' >> /etc/rc.local
 
 echo "Checking /boot/config.txt for enabled UART..."
 

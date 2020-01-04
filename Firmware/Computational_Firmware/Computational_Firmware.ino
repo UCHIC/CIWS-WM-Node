@@ -229,7 +229,11 @@ void loop()
     report[4] = Date.minutes;
     report[5] = Date.seconds;
     if(State.logging)                                   // If the microcontroller is logging data
+    {
       storeNewRecord(&State, &Date, &Date_Snapshot);    // Store a new record
+      report[6] = State.lastCount;                      // Store counted pulses from the previous sample period in report
+      report[7] = State.totalCount;                     // Store counted pulses over the entire logging period in report
+    }
     if(countDown)                                       // If it's time to count to the host computer's shutdown time
       powerOff_Count += 1;                                // Increment the counter
   }

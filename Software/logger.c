@@ -167,7 +167,7 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 	PyObject* DataList;						// DataList will hold the list of collected data.
 	char* filename;							// filname will hold the name of the file to write DataList to.
 	FILE* dataOut;							// Pointer to the output file.
-
+	FILE* totalPulses;						// Pointer to the total water flow file.
 	if(!PyArg_ParseTuple(args, "Os", &DataList, &filename))		// Retrieve the data and put it into DataList.
 	{
 		PyErr_SetString(PyExc_TypeError, "Expected a list and a string.");	// If the operation fails, set an error and return.
@@ -187,6 +187,21 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 		PyErr_SetString(PyExc_TypeError, "Could not create file.");
 		return PyString_FromString("Could not create file.");
 	}
+
+	long totalPulseCount = 0;
+	totalPulses = fopen("/home/pi/Software/data/totalPulseCount.dat", "r");
+	if(totalPulses == NULL)
+	{
+		PyErr_SetString(PyExc_TypeError, "Could not open pulse count file.");
+		totalPulseCount = 0;
+	}
+	int scan = fscanf(totalPulses, "%ld", &totalPulseCount);
+	if(scan == 0)
+	{
+		PyErr_SetString(PyExc_TypeError, "Error reading pulse count file.");
+		totalPulseCount = 0;
+	}
+	fclose(totalPulses);
 
 	PyObject* next = PyIter_Next(Iterator);				// Each next holds the data from the current DataList index.
 
@@ -237,6 +252,7 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 		else
 		{
 			fprintf(dataOut, "\"%02d-%02d-%02d %02d:%02d:%02d\",%d,%ld\n",year, month, day, hour, minute, second, recordNum, data);
+			totalPulseCount += data;
 			recordNum += 1;
 			second += deltaSec;
 			if (second >= 60)
@@ -301,6 +317,179 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 
 	fclose(dataOut);
 
+	totalPulses = fopen("/home/pi/Software/data/totalPulseCount.dat", "w");
+	if(totalPulses == NULL)
+	{
+		PyErr_SetString(PyExc_TypeError, "Could not open pulse count file.");
+		return PyString_FromString("Could not open pulse count file.");
+	}
+	fprintf(totalPulses, "%ld", totalPulseCount);
+	fclose(totalPulses);
+
+	return Py_None;
+}
+
+static PyObject* setID(PyObject* self, PyObject* args)
+{
+	FILE* IDconfig;
+	char* newID;
+	IDconfig = fopen("/home/pi/Software/config/IDconfig.txt", "w");			// Open ID Config File
+	if(IDconfig == NULL)								// Check file
+	{
+		PyErr_SetString(PyExc_TypeError, "Could not open IDconfig.txt.");
+		return PyString_FromString("Could not open IDconfig.txt.");
+	}
+	if(!PyArg_ParseTuple(args, "s", &newID))					// Parse arguments
+        {
+                PyErr_SetString(PyExc_TypeError, "Expected a string.");     	 	// If the operation fails, set an error and return.
+                return PyString_FromString("Bad arguments");
+        }
+	fprintf(IDconfig, "%s\n", newID);						// Write new ID number
+	fclose(IDconfig);
+
+	return Py_None;									// Close ID Config File
+}
+
+static PyObject* setSiteNumber(PyObject* self, PyObject* args)
+{
+	FILE* siteConfig;
+	char* newSite;
+	siteConfig = fopen("/home/pi/Software/config/siteConfig.txt", "w");
+	if(siteConfig == NULL)
+	{
+		PyErr_SetString(PyExc_TypeError, "Could not open siteConfig.txt.");
+		return PyString_FromString("Could not open siteConfig.txt");
+	}
+	if(!PyArg_ParseTuple(args, "s", &newSite))
+	{
+		PyErr_SetString(PyExc_TypeError, "Expected a string.");                 // If the operation fails, set an error and return.
+                return PyString_FromString("Bad arguments");
+	}
+	fprintf(siteConfig, "%s\n", newSite);
+	fclose(siteConfig);
+
+	return Py_None;
+}
+
+static PyObject* setMeterResolution(PyObject* self, PyObject* args)
+{
+	FILE* meterConfig;
+	char* newMeterRez;
+	meterConfig = fopen("/home/pi/Software/config/meterConfig.txt", "w");
+	if(meterConfig == NULL)
+	{
+		PyErr_SetString(PyExc_TypeError, "Could not open meterConfig.txt.");
+		return PyString_FromString("Could not open meterConfig.txt");
+	}
+	if(!PyArg_ParseTuple(args, "s", &newMeterRez))
+	{
+		PyErr_SetString(PyExc_TypeError, "Expected a string.");                 // If the operation fails, set an error and return.
+                return PyString_FromString("Bad arguments");
+	}
+	fprintf(meterConfig, "%s\n", newMeterRez);
+	fclose(meterConfig);
+
+	return Py_None;
+}
+
+static PyObject* getID(PyObject* self, PyObject* args)
+{
+	FILE* IDconfig;
+	char IDnum[] = {0, 0, 0, 0, 0};
+	IDconfig = fopen("/home/pi/Software/config/IDconfig.txt", "r");
+	if(IDconfig == NULL)								// Check file
+	{
+		PyErr_SetString(PyExc_TypeError, "Could not open IDconfig.txt.");
+		return PyString_FromString("Could not open IDconfig.txt.");
+	}
+	int scan = fscanf(IDconfig, "%4s", IDnum);
+	if(scan == 0)
+	{
+		PyErr_SetString(PyExc_TypeError, "Error reading IDconfig.txt.");
+                return PyString_FromString("Error reading IDconfig.txt.");
+	}
+	fclose(IDconfig);
+
+	return PyString_FromString(IDnum);
+}
+
+static PyObject* getSiteNumber(PyObject* self, PyObject* args)
+{
+	FILE* siteConfig;
+	char siteNum[] = {0, 0, 0, 0, 0};
+	siteConfig = fopen("/home/pi/Software/config/siteConfig.txt", "r");
+	if(siteConfig == NULL)
+	{
+		PyErr_SetString(PyExc_TypeError, "Could not open siteConfig.txt.");
+		return PyString_FromString("Could not open siteConfig.txt.");
+	}
+	int scan = fscanf(siteConfig, "%4s", siteNum);
+	if(scan == 0)
+	{
+		PyErr_SetString(PyExc_TypeError, "Error reading siteConfig.txt");
+		return PyString_FromString("Error reading siteConfig.txt");
+	}
+	fclose(siteConfig);
+
+	return PyString_FromString(siteNum);
+}
+
+static PyObject* getMeterResolution(PyObject* self, PyObject* args)
+{
+	FILE* meterConfig;
+	char meterRez[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+	meterConfig = fopen("/home/pi/Software/config/meterConfig.txt", "r");
+	if(meterConfig == NULL)
+	{
+		PyErr_SetString(PyExc_TypeError, "Could not open meterConfig.txt.");
+		return PyString_FromString("Could not open meterConfig.txt.");
+	}
+	int scan = fscanf(meterConfig, "%8s", meterRez);
+	if(scan == 0)
+	{
+		PyErr_SetString(PyExc_TypeError, "Error reading meterConfig.txt");
+		return PyString_FromString("Error reading meterConfig.txt");
+	}
+	fclose(meterConfig);
+
+	return PyString_FromString(meterRez);
+}
+
+static PyObject* getTotalFlow(PyObject* self, PyObject* args)
+{
+	FILE* totalPulses;
+	long totalPulseCount = 0;
+	totalPulses = fopen("/home/pi/Software/data/totalPulseCount.dat", "r");
+	if(totalPulses == NULL)
+	{
+		PyErr_SetString(PyExc_TypeError, "Could not open pulse count file.");
+		totalPulseCount = 0;
+	}
+	int scan = fscanf(totalPulses, "%ld", &totalPulseCount);
+	if(scan == 0)
+	{
+		PyErr_SetString(PyExc_TypeError, "Error reading pulse count file.");
+		totalPulseCount = 0;
+	}
+	fclose(totalPulses);
+
+	return PyLong_FromLong(totalPulseCount);
+}
+
+static PyObject* resetTotalFlow(PyObject* self, PyObject* args)
+{
+	FILE* totalPulses;
+	long totalPulseCount = 0;
+	totalPulses = fopen("/home/pi/Software/data/totalPulseCount.dat", "w");
+	if(totalPulses == NULL)
+	{
+		PyErr_SetString(PyExc_TypeError, "Could not open pulse count file.");
+		return PyString_FromString("Could not open pulse count file.");
+	}
+	fprintf(totalPulses, "%ld", totalPulseCount);
+
+	fclose(totalPulses);
+
 	return Py_None;
 }
 
@@ -315,6 +504,14 @@ static PyMethodDef methods[] = {
         { "setRomFree", setRomFree, METH_NOARGS, "Sends a signal to the datalogger that the EEPROM chip is not in use" },
         { "setPowerOff", setPowerOff, METH_NOARGS, "Sends a signal to the datalogger that the Pi is shutting down" },
 	{ "writeToFile", writeToFile, METH_VARARGS, "Writes a list of data to a file" },
+	{ "setID", setID, METH_VARARGS, "Sets a datalogger ID number" },
+	{ "setSiteNumber", setSiteNumber, METH_VARARGS, "Sets a datalogger site number" },
+	{ "getID", getID, METH_NOARGS, "Returns a datalogger ID number" },
+	{ "getSiteNumber", getSiteNumber, METH_NOARGS, "Returns a datalogger site number" },
+	{ "setMeterResolution", setMeterResolution, METH_VARARGS, "Sets a datalogger meter resolution" },
+	{ "getMeterResolution", getMeterResolution, METH_NOARGS, "Returns a datalogger meter resolution" },
+	{ "getTotalFlow", getTotalFlow, METH_NOARGS, "Returns the total pulses recorded during a logging session" },
+	{ "resetTotalFlow", resetTotalFlow, METH_NOARGS, "Resets the total pulse count recorded during a logging session" },
         { NULL, NULL, 0, NULL }
 };
 

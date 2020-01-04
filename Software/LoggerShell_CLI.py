@@ -1,9 +1,11 @@
 import subprocess
 import os
+import Logger
 
 exit = 0
 powerOff = 0
 command = ["-", "-", "-"]
+Logger.init()
 
 print " "
 print "======================== LoggerShell ========================"
@@ -19,6 +21,7 @@ while(exit == 0):
 	userInput = raw_input("> ")
 
 	if(userInput == "start-logging"):
+		Logger.resetTotalFlow()
 		command[0] = "python LoggerReportSwap.py 255 255 255 255 255 255 255 255 255"
 		command[1] = "python LoggerReportSwap.py 255 255 255 255 255 255 255 255 1"
 		process = subprocess.Popen(command[0], stdout=subprocess.PIPE, shell=True)
@@ -99,6 +102,36 @@ while(exit == 0):
 		Time = outputList[3] + ":" + outputList[4] + ":" + outputList[5]
 		print ">", Date
 		print ">", Time
+	elif(userInput == "set-id"):
+		newID = raw_input("> New ID: ")
+		Logger.setID(newID)
+	elif(userInput == "get-id"):
+		ID = Logger.getID()
+		print "> Datalogger ID:", ID
+	elif(userInput == "set-site"):
+		newSite = raw_input("> New Site: ")
+		Logger.setSiteNumber(newSite)
+	elif(userInput == "get-site"):
+		site = Logger.getSiteNumber()
+		print "> Datalogger Site:", site
+	elif(userInput == "set-meter"):
+		newMeterRez = raw_input("> New Meter Resolution: ")
+		Logger.setMeterResolution(newMeterRez)
+	elif(userInput == "get-meter"):
+		meterRez = Logger.getMeterResolution()
+		print "> Meter Resolution:", meterRez
+	elif(userInput == "water-flow"):
+		command[0] = "python LoggerReportSwap.py 255 255 255 255 255 255 255 255 255"
+		process = subprocess.Popen(command[0], stdout=subprocess.PIPE, shell=True)
+		(output, err) = process.communicate()
+		p_status = process.wait()
+		outputList = output.split()
+		pulseCount = outputList[6]
+		waterFlow = int(pulseCount) * float(Logger.getMeterResolution())
+		totalWaterFlow = Logger.getTotalFlow() * float(Logger.getMeterResolution())
+		print "> Pulses in last period:", pulseCount
+		print "> Estimated water flow:", waterFlow
+		print "> Total water flow:", totalWaterFlow
 	elif(userInput == "help"):
 		command[0] = "-"
 		print "> LoggerShell is a shell interface for all of the"
@@ -112,6 +145,13 @@ while(exit == 0):
 		print "> exit-poweroff    // Exit from LoggerShell and power off"
 		print "> start-logging    // Begin logging data"
 		print "> stop-logging     // Stop logging data"
+		print "> set-id           // Set a new datalogger ID number"
+		print "> get-id           // Read and display the datalogger ID number"
+		print "> set-site         // Set a new datalogger site number"
+		print "> get-site         // Read and display the datalogger site number"
+		print "> set-meter        // Set a meter resolution for the datalogger"
+		print "> get-meter        // Read and display the meter resolution for the datalogger"
+		print "> water-flow       // Display water flow data for the previous sample"
 	elif(userInput == "exit"):
 		command[0] = "-"
 		print "> To restart LoggerShell, execute the following command: sudo python LoggerShell_CLI.py"

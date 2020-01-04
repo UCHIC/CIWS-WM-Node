@@ -62,4 +62,20 @@ rm -f /usr/local/lib/python2.7/dist-packages/Logger*
 python setup.py build
 python setup.py install
 
+if [ ! -d "/home/pi/Software/data" ]
+then
+	echo "Creating directory for data files"
+	mkdir /home/pi/Software/data
+else
+	echo "Directory for data files found"
+fi
+
+if [ ! -d "/home/pi/Software/config" ]
+then
+	echo "Creating directory for configuration data"
+	mkdir /home/pi/Software/config
+else
+	echo "Directory for configuration data found"
+fi
+
 echo "Setup finished."

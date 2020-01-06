@@ -91,7 +91,7 @@ volatile State_t State;             // System State structure
 volatile Date_t Date;               // System Time and Date structure
 volatile Date_t Date_Snapshot;      //
 volatile SignalState_t SignalState; // Struct containing signal data from magnetometer
-volatile unsigned char report[9];   // Array containing system information. The report is passed between the microcontroller and the host computer (designed for a Raspberry Pi)
+volatile unsigned char report[11];   // Array containing system information. The report is passed between the microcontroller and the host computer (designed for a Raspberry Pi)
 volatile char reportIndex = 0;      // current index of the above report
 bool countDown = false;             // Tells program to count every four seconds until it's time to power off the host computer.
 char powerOff_Count = 0;            // Stores the count as described above.
@@ -125,15 +125,17 @@ void setup()
 
   loadDateTime(&Date);            // Disable Unneeded Peripherals
 
-  report[0] = Date.years;         // Initialize report data
-  report[1] = Date.months;
-  report[2] = Date.days;
-  report[3] = Date.hours;
-  report[4] = Date.minutes;
-  report[5] = Date.seconds;
-  report[6] = 0;
-  report[7] = 0;
-  report[8] = 0;
+  report[0] = Date.years;         // Initialize report data:  // Years
+  report[1] = Date.months;                                    // Months
+  report[2] = Date.days;                                      // Days
+  report[3] = Date.hours;                                     // Hours
+  report[4] = Date.minutes;                                   // Minutes
+  report[5] = Date.seconds;                                   // Seconds
+  report[6] = 0;                                              // Pulses in last period
+  report[7] = 0;                                              // Total pulses (byte 0)
+  report[8] = 0;                                              // Total pulses (byte 1)
+  report[9] = 0;                                              // Total pulses (byte 2)
+  report[10] = 0;                                             // Logging (y/n = 1/0)
 
   sei();                          // Enable interrupts
 }
@@ -163,7 +165,7 @@ void loop()
       unsigned char temp = UART_Receive();  // Store new byte
       UART_Transmit(report[reportIndex]);   // Transmit next byte
       report[reportIndex] = temp;           // Update the current report byte with the newly received byte  
-      if((++reportIndex) > 8)               // If the report has been filled up
+      if((++reportIndex) > 10)               // If the report has been filled up
       {
         reportIndex = 0;                      // Reset the report index
         State.newReport = true;               // Let the rest of the program know that a new report is ready to be serviced
@@ -232,7 +234,9 @@ void loop()
     {
       storeNewRecord(&State, &Date, &Date_Snapshot);    // Store a new record
       report[6] = State.lastCount;                      // Store counted pulses from the previous sample period in report
-      report[7] = State.totalCount;                     // Store counted pulses over the entire logging period in report
+      report[7] = (State.totalCount >> 16) & 0xFF;      // Store counted pulses over the entire logging period in report
+      report[8] = (State.totalCount >> 8) & 0xFF;
+      report[9] = State.totalCount & 0xFF;
     }
     if(countDown)                                       // If it's time to count to the host computer's shutdown time
       powerOff_Count += 1;                                // Increment the counter

@@ -64,25 +64,32 @@ void updateReport(unsigned char* report, Date_t* Date, State_t* State)
     char seconds_BCD = decimalToBCD(Date->seconds);     // Convert to RTC format (BCD)
     rtcTransfer(reg_Seconds, WRITE, seconds_BCD);       // Send the new date and time to the RTC
   }
-  if(report[8] == 0xFF)                           // If the new value is 0xFF
+  report[6] = State->lastCount;                      // Store counted pulses from the previous sample period in report
+  report[7] = (State->totalCount >> 16) & 0xFF;      // Store counted pulses over the entire logging period in report
+  report[8] = (State->totalCount >> 8) & 0xFF;
+  report[9] = State->totalCount & 0xFF;
+  if(report[10] == 0xFF)                           // If the new value is 0xFF
   {
     if(State->logging == true)
-      report[8] = 1;
+      report[10] = 1;
     else
-      report[8] = 0;
+      report[10] = 0;
   }
   else                                            // If the new value for logging is not 0xFF
   {
-    if((report[8] == 1) && !State->logging)       // If the new value is 1
+    if((report[10] == 1) && !State->logging)       // If the new value is 1
     {
       State->logging = true;                            // Let the rest of the program know that the microcontroller is logging
       State->readMag = true;                            // Tell the program to read the magnetometer data (since the interrupt has already fired)
       State->recordNum = 1;                             // Reset record number counter
       State->romAddr = HEADER_SIZE;                     // Reset ROM Address
+      State->totalCount = 0;                            // Reset Count Variables
+      State->pulseCount = 0;
+      State->lastCount = 0;
       writeDateAndTime(Date);                           // Store the date/time of the first data byte
       EIMSK |= (1 << INT0);                             // Enable Sensor interrupt
     }
-    else if((report[8] == 0) && State->logging)   // Else
+    else if((report[10] == 0) && State->logging)   // Else
     {
       EIMSK &= ~(1 << INT0);                            // Disable Sensor interrupt
       State->logging = false;                           // Let the rest of the program know that the microcontroller is no longer logging

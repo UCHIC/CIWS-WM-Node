@@ -88,7 +88,7 @@ void storeNewRecord(State_t* State, Date_t* Date, Date_t* Date_Snapshot)   // St
   finalCount = State->pulseCount;                       // Assign current pulseCount to finalCount
   State->pulseCount = 0;                                // Reset pulseCount to zero
   State->lastCount = finalCount;                        // lastCount is used to generate water usage information for the report swap between microcontroller and host computer. This is used to report the current water flow during a logging session.
-  State->totalCount += (unsigned int)finalCount;        // totalCount is also used to generate water usage information. This holds the total water flow during a logging session.
+  State->totalCount += (unsigned long)finalCount;       // totalCount is also used to generate water usage information. This holds the total water flow during a logging session.
   
   if(State->romFree)                                  // If the microcontroller has control over the EEPROM chip,
   {

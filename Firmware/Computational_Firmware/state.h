@@ -11,7 +11,7 @@ typedef struct
 {
   volatile byte pulseCount;
   volatile byte lastCount;
-  volatile unsigned int totalCount;
+  volatile unsigned long totalCount;
   volatile unsigned long recordNum;
   volatile unsigned long romAddr;
   volatile bool logging;

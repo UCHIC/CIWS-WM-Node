@@ -21,9 +21,8 @@ while(exit == 0):
 	userInput = raw_input("> ")
 
 	if(userInput == "start-logging"):
-		Logger.resetTotalFlow()
-		command[0] = "python LoggerReportSwap.py 255 255 255 255 255 255 255 255 255"
-		command[1] = "python LoggerReportSwap.py 255 255 255 255 255 255 255 255 1"
+		command[0] = "python LoggerReportSwap.py 255 255 255 255 255 255 255 255 255 255 255"
+		command[1] = "python LoggerReportSwap.py 255 255 255 255 255 255 255 255 255 255 1"
 		process = subprocess.Popen(command[0], stdout=subprocess.PIPE, shell=True)
 		(output, err) = process.communicate()
 		p_status = process.wait()
@@ -32,7 +31,7 @@ while(exit == 0):
 		(output, err) = process.communicate()
 		p_status = process.wait()
 		outputList = output.split()
-		if(int(outputList[8]) == 1):
+		if(int(outputList[10]) == 1):
 			print "> Device already logging"
 		else:
 			process = subprocess.Popen(command[1], stdout=subprocess.PIPE, shell=True)
@@ -42,37 +41,40 @@ while(exit == 0):
 			(output, err) = process.communicate()
 			p_status = process.wait()
 			outputList = output.split()
-			if(int(outputList[8]) == 1):
+			if(int(outputList[10]) == 1):
 				print "> Logging started successfully"
 			else:
-				print "> Logging was not started, logging field == ", outputList[8]
+				print "> Logging was not started, logging field == ", outputList[10]
 	elif(userInput == "stop-logging"):
-		command[0] = "python LoggerReportSwap.py 255 255 255 255 255 255 255 255 255"
-		command[1] = "python LoggerReportSwap.py 255 255 255 255 255 255 255 255 0"
+		command[0] = "python LoggerReportSwap.py 255 255 255 255 255 255 255 255 255 255 255"
+		command[1] = "python LoggerReportSwap.py 255 255 255 255 255 255 255 255 255 255 0"
 		command[2] = "python LoggerReadRom.py"
 		process = subprocess.Popen(command[0], stdout=subprocess.PIPE, shell=True)
 		(output, err) = process.communicate()
 		p_status = process.wait()
 		outputList = output.split()
-		if(int(outputList[8]) == 0):
+		if(int(outputList[10]) == 0):
 			print "> Device is not logging"
 		else:
+			print "> Setting stop bit..."
 			process = subprocess.Popen(command[1], stdout=subprocess.PIPE, shell=True)
 			(output, err) = process.communicate()
 			p_status = process.wait()
+			print "> Reading EEPROM..."
 			process = subprocess.Popen(command[2], stdout=subprocess.PIPE, shell=True)
 			(output, err) = process.communicate()
 			p_status = process.wait()
+			print "> Checking stop bit..."
 			process = subprocess.Popen(command[0], stdout=subprocess.PIPE, shell=True)
 			(output, err) = process.communicate()
 			p_status = process.wait()
 			outputList = output.split()
-			if(int(outputList[8]) == 0):
+			if(int(outputList[10]) == 0):
 				print "> Logging stopped successfully"
 			else:
-				print "> Logging was not stopped, logging field == ", outputList[8]
+				print "> Logging was not stopped, logging field == ", outputList[10]
 	elif(userInput == "date-time"):
-		command[0] = "python LoggerReportSwap.py 255 255 255 255 255 255 255 255 255"
+		command[0] = "python LoggerReportSwap.py 255 255 255 255 255 255 255 255 255 255 255"
 		process = subprocess.Popen(command[0], stdout=subprocess.PIPE, shell=True)
 		(output, err) = process.communicate()
 		p_status = process.wait()
@@ -89,8 +91,8 @@ while(exit == 0):
 		newMinute = raw_input("> Minute: ")
 		newSecond = raw_input("> Second: ")
 		space = " "
-		command[0] = "python LoggerReportSwap.py " + newYear + space + newMonth + space + newDay + space + newHour + space + newMinute + space + newSecond + " 255 255 255"
-		command[1] = "python LoggerReportSwap.py 255 255 255 255 255 255 255 255 255"
+		command[0] = "python LoggerReportSwap.py " + newYear + space + newMonth + space + newDay + space + newHour + space + newMinute + space + newSecond + " 255 255 255 255 255"
+		command[1] = "python LoggerReportSwap.py 255 255 255 255 255 255 255 255 255 255 255"
 		process = subprocess.Popen(command[0], stdout=subprocess.PIPE, shell=True)
 		(output, err) = process.communicate()
 		p_status = process.wait()
@@ -121,17 +123,19 @@ while(exit == 0):
 		meterRez = Logger.getMeterResolution()
 		print "> Meter Resolution:", meterRez
 	elif(userInput == "water-flow"):
-		command[0] = "python LoggerReportSwap.py 255 255 255 255 255 255 255 255 255"
+		command[0] = "python LoggerReportSwap.py 255 255 255 255 255 255 255 255 255 255 255"
 		process = subprocess.Popen(command[0], stdout=subprocess.PIPE, shell=True)
 		(output, err) = process.communicate()
 		p_status = process.wait()
 		outputList = output.split()
-		pulseCount = outputList[6]
-		waterFlow = int(pulseCount) * float(Logger.getMeterResolution())
-		totalWaterFlow = Logger.getTotalFlow() * float(Logger.getMeterResolution())
+		pulseCount = int(outputList[6])
+		totalCount = (int(outputList[7]) << 16) + (int(outputList[8]) << 8) + int(outputList[9])
+		waterFlow = pulseCount * float(Logger.getMeterResolution()) * 60.0 / 4.0
+		totalWaterFlow = float(totalCount) * float(Logger.getMeterResolution())
 		print "> Pulses in last period:", pulseCount
-		print "> Estimated water flow:", waterFlow
-		print "> Total water flow:", totalWaterFlow
+		print "> Estimated water flow:", waterFlow, "GPM"
+		print "> Total pulses counted:", totalCount
+		print "> Total water flow:", totalWaterFlow, "Gal"
 	elif(userInput == "help"):
 		command[0] = "-"
 		print "> LoggerShell is a shell interface for all of the"

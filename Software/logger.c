@@ -124,7 +124,7 @@ static PyObject* reportSwap(PyObject* self, PyObject* args)
 	PyObject* PyReport;
 
 	int i;
-	char report[9];
+	char report[11];
 
 	if(!PyArg_ParseTuple(args, "O!", &PyList_Type, &PyReport))
 	{
@@ -132,7 +132,7 @@ static PyObject* reportSwap(PyObject* self, PyObject* args)
 		return NULL;
 	}
 
-	for(i = 0; i < 9; i++)
+	for(i = 0; i < 11; i++)
 	{
 		report[i] = 0xFF & (char)PyInt_AS_LONG(PyList_GetItem(PyReport, i));
 		serialPutchar(serialFD, report[i]);
@@ -167,7 +167,6 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 	PyObject* DataList;						// DataList will hold the list of collected data.
 	char* filename;							// filname will hold the name of the file to write DataList to.
 	FILE* dataOut;							// Pointer to the output file.
-	FILE* totalPulses;						// Pointer to the total water flow file.
 	if(!PyArg_ParseTuple(args, "Os", &DataList, &filename))		// Retrieve the data and put it into DataList.
 	{
 		PyErr_SetString(PyExc_TypeError, "Expected a list and a string.");	// If the operation fails, set an error and return.
@@ -187,21 +186,6 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 		PyErr_SetString(PyExc_TypeError, "Could not create file.");
 		return PyString_FromString("Could not create file.");
 	}
-
-	long totalPulseCount = 0;
-	totalPulses = fopen("/home/pi/Software/data/totalPulseCount.dat", "r");
-	if(totalPulses == NULL)
-	{
-		PyErr_SetString(PyExc_TypeError, "Could not open pulse count file.");
-		totalPulseCount = 0;
-	}
-	int scan = fscanf(totalPulses, "%ld", &totalPulseCount);
-	if(scan == 0)
-	{
-		PyErr_SetString(PyExc_TypeError, "Error reading pulse count file.");
-		totalPulseCount = 0;
-	}
-	fclose(totalPulses);
 
 	PyObject* next = PyIter_Next(Iterator);				// Each next holds the data from the current DataList index.
 
@@ -252,7 +236,6 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 		else
 		{
 			fprintf(dataOut, "\"%02d-%02d-%02d %02d:%02d:%02d\",%d,%ld\n",year, month, day, hour, minute, second, recordNum, data);
-			totalPulseCount += data;
 			recordNum += 1;
 			second += deltaSec;
 			if (second >= 60)
@@ -316,15 +299,6 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 	}
 
 	fclose(dataOut);
-
-	totalPulses = fopen("/home/pi/Software/data/totalPulseCount.dat", "w");
-	if(totalPulses == NULL)
-	{
-		PyErr_SetString(PyExc_TypeError, "Could not open pulse count file.");
-		return PyString_FromString("Could not open pulse count file.");
-	}
-	fprintf(totalPulses, "%ld", totalPulseCount);
-	fclose(totalPulses);
 
 	return Py_None;
 }
@@ -455,44 +429,6 @@ static PyObject* getMeterResolution(PyObject* self, PyObject* args)
 	return PyString_FromString(meterRez);
 }
 
-static PyObject* getTotalFlow(PyObject* self, PyObject* args)
-{
-	FILE* totalPulses;
-	long totalPulseCount = 0;
-	totalPulses = fopen("/home/pi/Software/data/totalPulseCount.dat", "r");
-	if(totalPulses == NULL)
-	{
-		PyErr_SetString(PyExc_TypeError, "Could not open pulse count file.");
-		totalPulseCount = 0;
-	}
-	int scan = fscanf(totalPulses, "%ld", &totalPulseCount);
-	if(scan == 0)
-	{
-		PyErr_SetString(PyExc_TypeError, "Error reading pulse count file.");
-		totalPulseCount = 0;
-	}
-	fclose(totalPulses);
-
-	return PyLong_FromLong(totalPulseCount);
-}
-
-static PyObject* resetTotalFlow(PyObject* self, PyObject* args)
-{
-	FILE* totalPulses;
-	long totalPulseCount = 0;
-	totalPulses = fopen("/home/pi/Software/data/totalPulseCount.dat", "w");
-	if(totalPulses == NULL)
-	{
-		PyErr_SetString(PyExc_TypeError, "Could not open pulse count file.");
-		return PyString_FromString("Could not open pulse count file.");
-	}
-	fprintf(totalPulses, "%ld", totalPulseCount);
-
-	fclose(totalPulses);
-
-	return Py_None;
-}
-
 static PyMethodDef methods[] = {
 	{ "init", init, METH_NOARGS, "Performs necessary setup to communicate with GPIO and SPI." },
 	{ "initPins", initPins, METH_NOARGS, "Sets powerGood and romBusy lines low" },
@@ -510,8 +446,6 @@ static PyMethodDef methods[] = {
 	{ "getSiteNumber", getSiteNumber, METH_NOARGS, "Returns a datalogger site number" },
 	{ "setMeterResolution", setMeterResolution, METH_VARARGS, "Sets a datalogger meter resolution" },
 	{ "getMeterResolution", getMeterResolution, METH_NOARGS, "Returns a datalogger meter resolution" },
-	{ "getTotalFlow", getTotalFlow, METH_NOARGS, "Returns the total pulses recorded during a logging session" },
-	{ "resetTotalFlow", resetTotalFlow, METH_NOARGS, "Resets the total pulse count recorded during a logging session" },
         { NULL, NULL, 0, NULL }
 };
 

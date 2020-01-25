@@ -13,5 +13,3 @@ python-dev
 wiringpi
 ```
 WARNING: This code is still under development and not ready for use:</br>
-Issues:</br>
-reportSwap can only be called twice before it causes a segmentation fault (very consistent)</br>

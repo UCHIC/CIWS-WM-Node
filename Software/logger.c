@@ -13,6 +13,7 @@
 #define ROM_BUSY    24
 #define POWER_GOOD  25
 #define BUFFER_MAX  21600
+//#define BUFFER_MAX  60
 #define HEADER_SIZE 9
 
 int serialFD;
@@ -173,6 +174,54 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 		return PyString_FromString("Bad arguments");
 	}
 
+	FILE* IDconfig;
+	char IDnum[] = {0, 0, 0, 0, 0};
+	IDconfig = fopen("/home/pi/Software/config/IDconfig.txt", "r");
+	if(IDconfig == NULL)								// Check file
+	{
+		PyErr_SetString(PyExc_TypeError, "Could not open IDconfig.txt.");
+		return PyString_FromString("Could not open IDconfig.txt.");
+	}
+	int scan = fscanf(IDconfig, "%4s", IDnum);
+	if(scan == 0)
+	{
+		PyErr_SetString(PyExc_TypeError, "Error reading IDconfig.txt.");
+                return PyString_FromString("Error reading IDconfig.txt.");
+	}
+	fclose(IDconfig);
+
+	FILE* siteConfig;
+	char siteNum[] = {0, 0, 0, 0, 0};
+	siteConfig = fopen("/home/pi/Software/config/siteConfig.txt", "r");
+	if(siteConfig == NULL)
+	{
+		PyErr_SetString(PyExc_TypeError, "Could not open siteConfig.txt.");
+		return PyString_FromString("Could not open siteConfig.txt.");
+	}
+	scan = fscanf(siteConfig, "%4s", siteNum);
+	if(scan == 0)
+	{
+		PyErr_SetString(PyExc_TypeError, "Error reading siteConfig.txt");
+		return PyString_FromString("Error reading siteConfig.txt");
+	}
+	fclose(siteConfig);
+
+	FILE* meterConfig;
+	char meterRez[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+	meterConfig = fopen("/home/pi/Software/config/meterConfig.txt", "r");
+	if(meterConfig == NULL)
+	{
+		PyErr_SetString(PyExc_TypeError, "Could not open meterConfig.txt.");
+		return PyString_FromString("Could not open meterConfig.txt.");
+	}
+	scan = fscanf(meterConfig, "%8s", meterRez);
+	if(scan == 0)
+	{
+		PyErr_SetString(PyExc_TypeError, "Error reading meterConfig.txt");
+		return PyString_FromString("Error reading meterConfig.txt");
+	}
+	fclose(meterConfig);
+
 	PyObject* Iterator = PyObject_GetIter(DataList);		// Create an iterator to traverse the contents of DataList
 	if(!Iterator)
 	{
@@ -186,6 +235,8 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 		PyErr_SetString(PyExc_TypeError, "Could not create file.");
 		return PyString_FromString("Could not create file.");
 	}
+
+	fprintf(dataOut, "Site #: %s\nDatalogger ID #: %s\nMeter Resolution: %s\n", siteNum, IDnum, meterRez);
 
 	PyObject* next = PyIter_Next(Iterator);				// Each next holds the data from the current DataList index.
 
@@ -235,7 +286,7 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 		}
 		else
 		{
-			fprintf(dataOut, "\"%02d-%02d-%02d %02d:%02d:%02d\",%d,%ld\n",year, month, day, hour, minute, second, recordNum, data);
+			fprintf(dataOut, "\"%02d-%02d-%02d %02d:%02d:%02d\",%d,%ld\n", year, month, day, hour, minute, second, recordNum, data);
 			recordNum += 1;
 			second += deltaSec;
 			if (second >= 60)
@@ -253,12 +304,12 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 				hour = hour % 24;
 				day += 1;
 			}
-			if (day >= 31)
+			if (day > 31)
 			{
 				day = 1;
 				month += 1;
 			}
-			if (day >= 30)
+			if (day > 30)
 			{
 				if((month == 9) || (month == 4) || (month == 6) || (month == 11))	// If Month with thirty days
 				{
@@ -266,7 +317,7 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 					month += 1;
 				}
 			}
-			if (day >= 29)
+			if (day > 29)
 			{
 				if(month == 2)	// If February
 				{
@@ -274,7 +325,7 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 					month += 1;
 				}
 			}
-			if (day >= 28)
+			if (day > 28)
 			{
 				if(month ==2)	// Condition: If February and Not Leap Year
 				{

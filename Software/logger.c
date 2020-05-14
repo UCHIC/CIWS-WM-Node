@@ -12,8 +12,7 @@
 
 #define ROM_BUSY    24
 #define POWER_GOOD  25
-#define BUFFER_MAX  21600
-//#define BUFFER_MAX  60
+#define BUFFER_MAX  24000
 #define HEADER_SIZE 9
 
 int serialFD;

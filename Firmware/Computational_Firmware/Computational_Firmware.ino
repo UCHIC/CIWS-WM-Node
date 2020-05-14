@@ -25,7 +25,7 @@
 *                                                                                      |                       |
 *                                                                                      |                       |
 *                                                                                      |_______________________|
-* 
+*
 * Serial:          Serial interface for data swapping between Controller and Host Computer
 * Controller:      Arduino Pro/Pro Mini (Note: Few if any Arduino Libraries used, in order to boost performance)
 * Host Computer:   Raspberry Pi. Runs data processing algorithms on data collected from Controller.
@@ -38,7 +38,7 @@
 
 /*****************************************************************\
 * Software Description
-* Overview: 
+* Overview:
 *   User inputs:
 *     Activation Button.
 *   Device inputs:
@@ -49,7 +49,7 @@
 *     Data Records
 *     Serial Reports
 *     Power Control for host computer
-*     
+*
 * Structure:
 *   1. Setup
 *   2. Handle Raspberry Pi Power-up (for start-up configuration)
@@ -68,12 +68,12 @@
 *          If peak detected
 *            pulseCount += 1
 *      Repeat Loop
-*      
+*
 * Interrupts:
 *   1. INT0_ISR()
-*      
+*
 *   2. INT1_ISR()
-*      
+*
 \*****************************************************************/
 
 #include "powerSleep.h"
@@ -85,7 +85,7 @@
 #include "storeNewRecord.h"
 #include "comm.h"
 
-#define BUFFER_MAX 21600
+#define BUFFER_MAX 24000
 
 volatile State_t State;             // System State structure
 volatile Date_t Date;               // System Time and Date structure
@@ -95,6 +95,7 @@ volatile unsigned char report[11];   // Array containing system information. The
 volatile char reportIndex = 0;      // current index of the above report
 bool countDown = false;             // Tells program to count every four seconds until it's time to power off the host computer.
 char powerOff_Count = 0;            // Stores the count as described above.
+byte current_day = 0;
 
 void setup()
 {
@@ -124,7 +125,7 @@ void setup()
   EIMSK |= (1 << INT1);                                         // Enable 4-Second RTC interrupt.
 
   loadDateTime(&Date);            // Disable Unneeded Peripherals
-
+  current_day = Date.days;
   report[0] = Date.years;         // Initialize report data:  // Years
   report[1] = Date.months;                                    // Months
   report[2] = Date.days;                                      // Days
@@ -142,8 +143,11 @@ void setup()
 
 void loop()
 {
-  if((((PIND & 0x20) == 0x00) && !State.RPiON) || (State.romAddr > (BUFFER_MAX + HEADER_SIZE))) // If (button is pressed and the host computer is off) OR (The ROM address is greater than the data length)
+  if((((PIND & 0x20) == 0x00) && !State.RPiON) || // If button is pressed and host computer is off
+    (current_day != Date.days) ||                 // OR it's a new day
+    (State.romAddr > (BUFFER_MAX + HEADER_SIZE))) // OR The ROM address is greater than the max data length
   {
+    current_day = Date.days;
     State.RPiON = true;                                                               // Let the rest of the program know that the host computer is on
     copyDateTime(&Date, &Date_Snapshot);                                              // Get a timestamp for the data to be put in the ROM buffer
     State.romAddr = HEADER_SIZE;                                                      // Reset the ROM address
@@ -151,31 +155,31 @@ void loop()
     writeDataSize(&State);                                                            // Store the number of data bytes in the first three bytes of the EEPROM chip for the host computer
     powerRPiON();                                                                     // Power on the host computer
   }
-  
+
   if(State.RPiON)                     /** Execute the following code IF the host computer is on **/
   {
-    if(State.newReport)                   // If a new report has been exchanged between the microcontroller and the host computer                          
+    if(State.newReport)                   // If a new report has been exchanged between the microcontroller and the host computer
     {
       State.newReport = false;              // Let the rest of the program know that the new report has been serviced
       updateReport(report, &Date, &State);  // Service the new report by updating state, date, and time information.
     }
-  
+
     if(usartReceiveComplete())            // If the microcontroller has received a byte from the host computer
     {
       unsigned char temp = UART_Receive();  // Store new byte
       UART_Transmit(report[reportIndex]);   // Transmit next byte
-      report[reportIndex] = temp;           // Update the current report byte with the newly received byte  
+      report[reportIndex] = temp;           // Update the current report byte with the newly received byte
       if((++reportIndex) > 10)               // If the report has been filled up
       {
         reportIndex = 0;                      // Reset the report index
         State.newReport = true;               // Let the rest of the program know that a new report is ready to be serviced
       }
-      
+
     }
-/* 
+/*
     if(((PINC & 0x01) == 0x01) && State.romFree)
       State.romFree = false;
-*/  
+*/
     if(((PINC & 0x01) == 0x00) && !State.romFree && State.powerGood)  // If the EEPROM Busy signal from the host computer goes low when the host computer has been detected as ON and reading the EEPROM
     {
       State.romFree = true;                                             // Let the rest of the program know that the EEPROM is accessible

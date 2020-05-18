@@ -35,7 +35,7 @@ void enterSleep()
 /**********************************************\
  * Function Name: disableUnneededPeripherals
  * Purpose:       Cut all power to peripherals
- *                to save battery life. Some 
+ *                to save battery life. Some
  *                will be turned on again
  *                temporarily.
  * Inputs:        None
@@ -54,12 +54,12 @@ void enterSleep()
 void disableUnneededPeripherals()
 {
   /*** Disable Uneeded Peripherals ***/
-  ADCSRA = 0;   // Disable ADC
+  ADCSRA = 0;               // Disable ADC
   power_adc_disable();
-  power_timer0_disable();
-  power_timer1_disable();
-  power_timer2_disable();
-  power_twi_disable();
+  //power_timer0_disable(); // Timers must be enabled for this program
+  //power_timer1_disable();
+  //power_timer2_disable();
+  power_twi_disable();      // All other peripherals will be reactivated when needed.
   power_usart0_disable();
   power_spi_disable();
 

@@ -124,7 +124,7 @@ void setup()
   EIMSK &= ~(1 << INT0);                                        // Disable Sensor interrupt
   EIMSK |= (1 << INT1);                                         // Enable 4-Second RTC interrupt.
 
-  loadDateTime(&Date);            // Disable Unneeded Peripherals
+  loadDateTime(&Date);            // Load date and time into the Date structure
   current_day = Date.days;
   report[0] = Date.years;         // Initialize report data:  // Years
   report[1] = Date.months;                                    // Months
@@ -139,6 +139,7 @@ void setup()
   report[10] = 0;                                             // Logging (y/n = 1/0)
 
   sei();                          // Enable interrupts
+  disableUnneededPeripherals();   // Disable peripherals not in use (WARNING: FUNCTION MUST NOT DISABLE TIMERS)
 }
 
 void loop()
@@ -186,17 +187,17 @@ void loop()
       PORTB |= 0x01;                                                    // Set the host computer's SPI bus enable line high (active low, so the host computer is disconnected).
       spiInit();                                                        // Set the microcontroller's SPI pins appropriately again.
     }
-  
+
     if(((PINC & 0x02) == 0x02) && !State.powerGood)   // If the host computer's power good line transitions from low to high
       State.powerGood = true;                           // Let the rest of the program know that the host computer is successfully powered on.
-  
+
     if(((PINC & 0x02) != 0x02) && State.powerGood)    // If the host computer's power good line transitions from high to low
     {
       State.powerGood = false;                          // Let the rest of the program know that the host computer is shutting down
       countDown = true;                                 // Tell the rest of the program to count every four seconds to know when to disconnect power to the host computer
       powerOff_Count = 0;                               // Initialize the counter.
     }
-  
+
     if(powerOff_Count > 3)                            // If the count exceeds three
     {
       powerOff_Count = 0;                               // Reset the counter
@@ -216,7 +217,7 @@ void loop()
       State.powerGood = false;                          // Let the rest of the program know that the host computer is no longer on
     }
   }
-  
+
   // DANIEL
   /*****************************************\
   * 4-second update: Update at 4 seconds
@@ -248,8 +249,8 @@ void loop()
 
   // JOSH
   /*****************************************\
-   * Read Magnetometer: 
-   * 
+   * Read Magnetometer:
+   *
    * If readMag is set:
    *   call readData(&mag, &SignalState);
    *   If peakDetected(&SignalState)
@@ -261,7 +262,7 @@ void loop()
     readData(&SignalState);                             // Read the data from the magnetometer and store it in the SignalState struct
 
     bool peak = peakDetected(&SignalState);             // Process the data in order to detect peaks
-    
+
     if(peak)                                            // If a peak was detected
     {
       State.pulseCount += 1;                              // Increment the current pulse count
@@ -271,9 +272,9 @@ void loop()
 
 // DANIEL
 /* Function Title: INT0_ISR()
- * 
+ *
  * Friendly Name:  Sensor Interrupt Service Routine (ISR)
- * 
+ *
  * Description: sets readMag flag to true every time this function is
  *              called by hardware.
  */
@@ -284,9 +285,9 @@ void INT0_ISR()
 
 // DANIEL
 /* Function Title: INT1_ISR()
- * 
+ *
  * Friendly Name:  Real Time Clock OUT Interrupt Service Routine (ISR)
- * 
+ *
  * Description: sets the 4-second flag to true each time this function
  *              is called by hardware. The Real Time Clock generates
  *              the signal that calls this ISR once every four seconds.

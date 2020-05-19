@@ -202,7 +202,7 @@ void storeNewRecord(State_t* State, Date_t* Date, Date_t* Date_Snapshot)   // St
   else                                                // If the microcontroller does not have control over the EEPROM chip
   {
     romDataBuffer[romDataBufferIndex] = finalCount;     // Store data in romDataBuffer
-    if(romDataBufferIndex < romDataBufferSize)          // If the buffer is not full
+    if(romDataBufferIndex < (romDataBufferSize - 1))    // If the buffer is not full
     {
       romDataBufferIndex += 1;                            // Increment the romDataBufferIndex
     }

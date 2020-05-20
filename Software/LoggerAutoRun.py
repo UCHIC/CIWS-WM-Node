@@ -33,6 +33,6 @@ if os.path.exists(filename) == False:
 # 10		 Data Byte
 # ...		 ...
 
-if (dataTuple[0] == Logger.bufferMax()):	# This means that the Pi was turned on by the Datalogger, not a user, so it should turn itself off.
+if (dataTuple[4] == 0) and (dataTuple[5] == 0):	# This means that the Pi was turned on at midnight. This is likely by the microcontroller, so it should turn itself off.
 	Logger.setPowerOff()			# Tell the AVR datalogger that the Raspberry Pi is shutting down.
 	os.system("sudo poweroff")		# Shut down the Raspberry Pi

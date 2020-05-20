@@ -14,7 +14,10 @@ Logger.setRomFree()		# Tell the AVR datalogger that the EEPROM chip is no longer
 filename = "/home/pi/Software/data/output_" + '-'.join([str(dataTuple[2]), str(dataTuple[3]), str(dataTuple[1])]) + '_' + '-'.join([str(dataTuple[4]), str(dataTuple[5]), str(dataTuple[6])]) + ".csv"
 #if os.path.isdir("/home/pi/Software/data") == False:
 #	os.system("mkdir /home/pi/Software/data")
-if os.path.exists(filename) == False:
+try:
+	if os.path.exists(filename) == False:
+		Logger.writeToFile(dataTuple, filename)
+except:
 	Logger.writeToFile(dataTuple, filename)
 
 # Process the contents of dataTuple here. The format is as follows:

@@ -16,5 +16,6 @@ void resetState(volatile State_t* State)
   State->powerGood = false;
   State->romFree = true;
   State->RPiFalseON = false;
+  State->interval = 4;
   return;
 }

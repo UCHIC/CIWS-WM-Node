@@ -7,8 +7,15 @@ Logger.setPowerGood()           # Tell the AVR datalogger that the Raspberry Pi 
 dataTuple = Logger.loadData()   # Read the data from the EEPROM chip
 Logger.setRomFree()             # Tell the AVR datalogger that the EEPROM chip is no longer in use.
 
-filename = "/home/pi/Software/data/output_" + '-'.join([str(dataTuple[2]), str(dataTuple[3]), str(dataTuple[1])]) + '_' + '-'.join([str(dataTuple[4]), str(dataTuple[5]), str(dataTuple[6])]) + ".csv"
-#if os.path.isdir("/home/pi/Software/data") == False:
-#        os.system("mkdir /home/pi/Software/data")
-if os.path.exists(filename) == False:
-        Logger.writeToFile(dataTuple, filename)
+# Write data to file
+
+filename= "/home/pi/Software/data/site" + Logger.getSiteNumber().zfill(4) + "_20" + '-'.join([str(dataTuple[1]).zfill(2), str(dataTuple[2]).zfill(2), str(dataTuple[3]).zfill(2)])\
+	+ 'T' + str(dataTuple[4]).zfill(2) + str(dataTuple[5]).zfill(2) + str(dataTuple[6]).zfill(2) + ".csv"
+
+try:
+	if os.path.exists(filename) == False:
+        	Logger.writeToFile(dataTuple, filename)
+except:
+	Logger.writeToFile(dataTuple, filename)
+
+# CALL DISAGGREGATION CODE HERE

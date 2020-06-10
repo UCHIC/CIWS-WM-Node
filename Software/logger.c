@@ -15,7 +15,11 @@
 #define BUFFER_MAX  24000
 #define HEADER_SIZE 9
 
-int serialFD;
+#define START 0xEE
+
+#define REPORT_SIZE 12
+
+int serialFD;	// File pointer for the UART
 
 /** Initialize the Logger Module **/
 
@@ -124,23 +128,25 @@ static PyObject* reportSwap(PyObject* self, PyObject* args)
 	PyObject* PyReport;
 
 	int i;
-	char report[11];
+	char report[REPORT_SIZE];
 
-	if(!PyArg_ParseTuple(args, "O!", &PyList_Type, &PyReport))
+	if(!PyArg_ParseTuple(args, "O!", &PyList_Type, &PyReport))			// Parse arguments for PyReport
 	{
-		PyErr_SetString(PyExc_TypeError, "Parameter must be a list.");
+		PyErr_SetString(PyExc_TypeError, "Parameter must be a list.");			// If parse fails, set error and return
 		return NULL;
 	}
 
-	for(i = 0; i < 11; i++)
+	serialPutchar(serialFD, START);							// Send START byte
+	for(i = 0; i < REPORT_SIZE; i++)						// Iterate over all report data in PyReport
 	{
-		report[i] = 0xFF & (char)PyInt_AS_LONG(PyList_GetItem(PyReport, i));
-		serialPutchar(serialFD, report[i]);
-		report[i] = (char)serialGetchar(serialFD);
-		PyList_SetItem(PyReport, i, Py_BuildValue("b", report[i]));
+		report[i] = 0xFF & (char)PyInt_AS_LONG(PyList_GetItem(PyReport, i));		// Extract data byte from PyReport
+		serialPutchar(serialFD, report[i]);						// Send data byte
+		report[i] = (char)serialGetchar(serialFD);					// Receive data byte
+		PyList_SetItem(PyReport, i, Py_BuildValue("b", report[i]));			// Store data byte in PyReport
+
 	}
 
-	return PyReport;
+	return PyReport;								// Return report data
 }
 
 /** Tell the AVR datalogger that the EEPROM chip is no longer in use **/
@@ -173,15 +179,31 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 		return PyString_FromString("Bad arguments");
 	}
 
+	FILE* clockPeriod;
+	int deltaSec = 0;
+	clockPeriod = fopen("/home/pi/Software/config/clockPeriod.txt", "r");		// Open the clock period file
+	if(clockPeriod == NULL)								// Check file
+	{
+		PyErr_SetString(PyExc_TypeError, "Could not open clockPeriod.txt.");
+		return PyString_FromString("Could not open clockPeriod.txt.");
+	}
+	int scan = fscanf(clockPeriod, "%d", &deltaSec);				// Store the clock period as deltaSec
+	if(scan == 0)
+	{
+		PyErr_SetString(PyExc_TypeError, "Error reading clockPeriod.txt.");
+                return PyString_FromString("Error reading clockPeriod.txt.");
+	}
+	fclose(clockPeriod);
+
 	FILE* IDconfig;
 	char IDnum[] = {0, 0, 0, 0, 0};
-	IDconfig = fopen("/home/pi/Software/config/IDconfig.txt", "r");
+	IDconfig = fopen("/home/pi/Software/config/IDconfig.txt", "r");			// Open the ID file
 	if(IDconfig == NULL)								// Check file
 	{
 		PyErr_SetString(PyExc_TypeError, "Could not open IDconfig.txt.");
 		return PyString_FromString("Could not open IDconfig.txt.");
 	}
-	int scan = fscanf(IDconfig, "%4s", IDnum);
+	scan = fscanf(IDconfig, "%4s", IDnum);						// Store the ID as IDnum
 	if(scan == 0)
 	{
 		PyErr_SetString(PyExc_TypeError, "Error reading IDconfig.txt.");
@@ -191,13 +213,13 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 
 	FILE* siteConfig;
 	char siteNum[] = {0, 0, 0, 0, 0};
-	siteConfig = fopen("/home/pi/Software/config/siteConfig.txt", "r");
-	if(siteConfig == NULL)
+	siteConfig = fopen("/home/pi/Software/config/siteConfig.txt", "r");		// Open the site file
+	if(siteConfig == NULL)								// Check file
 	{
 		PyErr_SetString(PyExc_TypeError, "Could not open siteConfig.txt.");
 		return PyString_FromString("Could not open siteConfig.txt.");
 	}
-	scan = fscanf(siteConfig, "%4s", siteNum);
+	scan = fscanf(siteConfig, "%4s", siteNum);					// Store the site as siteNum
 	if(scan == 0)
 	{
 		PyErr_SetString(PyExc_TypeError, "Error reading siteConfig.txt");
@@ -207,13 +229,13 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 
 	FILE* meterConfig;
 	char meterRez[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-	meterConfig = fopen("/home/pi/Software/config/meterConfig.txt", "r");
-	if(meterConfig == NULL)
+	meterConfig = fopen("/home/pi/Software/config/meterConfig.txt", "r");		// Open the meter file
+	if(meterConfig == NULL)								// Check file
 	{
 		PyErr_SetString(PyExc_TypeError, "Could not open meterConfig.txt.");
 		return PyString_FromString("Could not open meterConfig.txt.");
 	}
-	scan = fscanf(meterConfig, "%8s", meterRez);
+	scan = fscanf(meterConfig, "%8s", meterRez);					// Store meter as meterRez
 	if(scan == 0)
 	{
 		PyErr_SetString(PyExc_TypeError, "Error reading meterConfig.txt");
@@ -240,23 +262,21 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 	PyObject* next = PyIter_Next(Iterator);				// Each next holds the data from the current DataList index.
 
 	unsigned int index = 0;
+	/* Date and Time variables will be used to write timestamps in the output file */
 	int month = 0;
 	int day = 0;
 	int year = 0;
 	int hour = 0;
 	int minute = 0;
 	int second = 0;
-	const int deltaSec = 4;
 	long data;
 	int recordNum = 1;
 
 	while(next != NULL)						// Print each value to the output file.
 	{
 		data = PyInt_AsLong(next);
-		if (index < 7)
+		if (index < 7)							// Save starting timestamp
 		{
-		/*	if (index == 0)
-				fprintf(dataOut, "Data Size: %ld\n", data);*/
 			if (index == 1)
 			{
 				year = data;
@@ -283,12 +303,12 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 				second = data;
 			}
 		}
-		else
+		else	// Once the timestamp has been filled up, and the header has been created, write pulse data to file and calculate a new timestamp
 		{
-			fprintf(dataOut, "\"%02d-%02d-%02d %02d:%02d:%02d\",%d,%ld\n", year, month, day, hour, minute, second, recordNum, data);
-			recordNum += 1;
-			second += deltaSec;
-			if (second >= 60)
+			fprintf(dataOut, "\"%02d-%02d-%02d %02d:%02d:%02d\",%d,%ld\n", year, month, day, hour, minute, second, recordNum, data);	// Print the timestamp, record number, and data.
+			recordNum += 1;				// Increment the record number
+			second += deltaSec;			// Increment the seconds by the time interval
+			if (second >= 60)			// Update the rest of the timestamp fields accordingly
 			{
 				second = second % 60;
 				minute += 1;
@@ -345,12 +365,51 @@ static PyObject* writeToFile(PyObject* self, PyObject* args)
 			}
 		}
 		next = PyIter_Next(Iterator);
-		index += 1;
+		index += 1;				// Increment index
 	}
 
-	fclose(dataOut);
+	fclose(dataOut);				// Close the data file
 
 	return Py_None;
+}
+
+static PyObject* storePeriod(PyObject* self, PyObject* args)
+{
+	FILE* clockPeriod;
+	unsigned char newPeriod;
+	clockPeriod = fopen("/home/pi/Software/config/clockPeriod.txt", "w");		// Open clockPeriod file
+	if(clockPeriod == NULL)								// Check file
+	{
+		return PyString_FromString("Could not open clockPeriod.txt");
+	}
+	if(!PyArg_ParseTuple(args, "b", &newPeriod))					// Parse arguments
+	{
+		PyErr_SetString(PyExc_TypeError, "Expected an eight-bit integer.");	// If parsing fails, set error and return
+		return PyString_FromString("Bad arguments");
+	}
+	fprintf(clockPeriod, "%d\n", newPeriod);					// Write new clock period
+	fclose(clockPeriod);								// Close clockPeriod file
+
+	return Py_None;
+}
+
+static PyObject* getPeriod(PyObject* self, PyObject* args)
+{
+	FILE* clockPeriod;
+	char period[] = {0, 0, 0, 0, 0};
+	clockPeriod = fopen("/home/pi/Software/config/clockPeriod.txt", "r");		// Open clockPeriod file
+	if(clockPeriod == NULL)								// Check file
+	{
+		return Py_BuildValue("i", 0);
+	}
+	int scan = fscanf(clockPeriod, "%4s", period);					// Read period number
+	if(scan == 0)
+	{
+		return Py_BuildValue("i", 0);
+	}
+	fclose(clockPeriod);								// Close clockPeriod file
+
+	return PyString_FromString(period);						// Return clockPeriod
 }
 
 static PyObject* setID(PyObject* self, PyObject* args)
@@ -360,12 +419,11 @@ static PyObject* setID(PyObject* self, PyObject* args)
 	IDconfig = fopen("/home/pi/Software/config/IDconfig.txt", "w");			// Open ID Config File
 	if(IDconfig == NULL)								// Check file
 	{
-		PyErr_SetString(PyExc_TypeError, "Could not open IDconfig.txt.");
 		return PyString_FromString("Could not open IDconfig.txt.");
 	}
 	if(!PyArg_ParseTuple(args, "s", &newID))					// Parse arguments
         {
-                PyErr_SetString(PyExc_TypeError, "Expected a string.");     	 	// If the operation fails, set an error and return.
+                PyErr_SetString(PyExc_TypeError, "Expected a string.");     	 	// If parsing fails, set error and return.
                 return PyString_FromString("Bad arguments");
         }
 	fprintf(IDconfig, "%s\n", newID);						// Write new ID number
@@ -378,19 +436,18 @@ static PyObject* setSiteNumber(PyObject* self, PyObject* args)
 {
 	FILE* siteConfig;
 	char* newSite;
-	siteConfig = fopen("/home/pi/Software/config/siteConfig.txt", "w");
-	if(siteConfig == NULL)
+	siteConfig = fopen("/home/pi/Software/config/siteConfig.txt", "w");		// Open Site Config File
+	if(siteConfig == NULL)								// Check file
 	{
-		PyErr_SetString(PyExc_TypeError, "Could not open siteConfig.txt.");
 		return PyString_FromString("Could not open siteConfig.txt");
 	}
-	if(!PyArg_ParseTuple(args, "s", &newSite))
+	if(!PyArg_ParseTuple(args, "s", &newSite))					// Parse arguments
 	{
-		PyErr_SetString(PyExc_TypeError, "Expected a string.");                 // If the operation fails, set an error and return.
+		PyErr_SetString(PyExc_TypeError, "Expected a string.");                 // If parsing fails, set error and return.
                 return PyString_FromString("Bad arguments");
 	}
-	fprintf(siteConfig, "%s\n", newSite);
-	fclose(siteConfig);
+	fprintf(siteConfig, "%s\n", newSite);						// Write new Site number
+	fclose(siteConfig);								// Close Site Config File
 
 	return Py_None;
 }
@@ -399,19 +456,18 @@ static PyObject* setMeterResolution(PyObject* self, PyObject* args)
 {
 	FILE* meterConfig;
 	char* newMeterRez;
-	meterConfig = fopen("/home/pi/Software/config/meterConfig.txt", "w");
-	if(meterConfig == NULL)
+	meterConfig = fopen("/home/pi/Software/config/meterConfig.txt", "w");		// Open Meter Config File
+	if(meterConfig == NULL)								// Check file
 	{
-		PyErr_SetString(PyExc_TypeError, "Could not open meterConfig.txt.");
 		return PyString_FromString("Could not open meterConfig.txt");
 	}
-	if(!PyArg_ParseTuple(args, "s", &newMeterRez))
+	if(!PyArg_ParseTuple(args, "s", &newMeterRez))					// Parse arguments
 	{
-		PyErr_SetString(PyExc_TypeError, "Expected a string.");                 // If the operation fails, set an error and return.
+		PyErr_SetString(PyExc_TypeError, "Expected a string.");                 // If parsing fails, set error and return.
                 return PyString_FromString("Bad arguments");
 	}
-	fprintf(meterConfig, "%s\n", newMeterRez);
-	fclose(meterConfig);
+	fprintf(meterConfig, "%s\n", newMeterRez);					// Write new Meter Resolution
+	fclose(meterConfig);								// Close Meter Config File
 
 	return Py_None;
 }
@@ -420,65 +476,60 @@ static PyObject* getID(PyObject* self, PyObject* args)
 {
 	FILE* IDconfig;
 	char IDnum[] = {0, 0, 0, 0, 0};
-	IDconfig = fopen("/home/pi/Software/config/IDconfig.txt", "r");
+	IDconfig = fopen("/home/pi/Software/config/IDconfig.txt", "r");			// Open ID config file
 	if(IDconfig == NULL)								// Check file
 	{
-		PyErr_SetString(PyExc_TypeError, "Could not open IDconfig.txt.");
-		return PyString_FromString("Could not open IDconfig.txt.");
+		return Py_BuildValue("i", 0);
 	}
-	int scan = fscanf(IDconfig, "%4s", IDnum);
+	int scan = fscanf(IDconfig, "%4s", IDnum);					// Read ID number
 	if(scan == 0)
 	{
-		PyErr_SetString(PyExc_TypeError, "Error reading IDconfig.txt.");
-                return PyString_FromString("Error reading IDconfig.txt.");
+		return Py_BuildValue("i", 0);
 	}
-	fclose(IDconfig);
+	fclose(IDconfig);								// Close ID config file
 
-	return PyString_FromString(IDnum);
+	return PyString_FromString(IDnum);						// Return ID number
 }
 
 static PyObject* getSiteNumber(PyObject* self, PyObject* args)
 {
 	FILE* siteConfig;
 	char siteNum[] = {0, 0, 0, 0, 0};
-	siteConfig = fopen("/home/pi/Software/config/siteConfig.txt", "r");
-	if(siteConfig == NULL)
+	siteConfig = fopen("/home/pi/Software/config/siteConfig.txt", "r");		// Open Site config file
+	if(siteConfig == NULL)								// Check file
 	{
-		PyErr_SetString(PyExc_TypeError, "Could not open siteConfig.txt.");
-		return PyString_FromString("Could not open siteConfig.txt.");
+		return Py_BuildValue("i", 0);
 	}
-	int scan = fscanf(siteConfig, "%4s", siteNum);
+	int scan = fscanf(siteConfig, "%4s", siteNum);					// Read site number
 	if(scan == 0)
 	{
-		PyErr_SetString(PyExc_TypeError, "Error reading siteConfig.txt");
-		return PyString_FromString("Error reading siteConfig.txt");
+		return Py_BuildValue("i", 0);
 	}
-	fclose(siteConfig);
+	fclose(siteConfig);								// Close site config file
 
-	return PyString_FromString(siteNum);
+	return PyString_FromString(siteNum);						// Return site number
 }
 
 static PyObject* getMeterResolution(PyObject* self, PyObject* args)
 {
 	FILE* meterConfig;
 	char meterRez[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-	meterConfig = fopen("/home/pi/Software/config/meterConfig.txt", "r");
-	if(meterConfig == NULL)
+	meterConfig = fopen("/home/pi/Software/config/meterConfig.txt", "r");		// Open meter config file
+	if(meterConfig == NULL)								// Check file
 	{
-		PyErr_SetString(PyExc_TypeError, "Could not open meterConfig.txt.");
-		return PyString_FromString("Could not open meterConfig.txt.");
+		return Py_BuildValue("i", 0);
 	}
-	int scan = fscanf(meterConfig, "%8s", meterRez);
+	int scan = fscanf(meterConfig, "%8s", meterRez);				// Read meter resolution
 	if(scan == 0)
 	{
-		PyErr_SetString(PyExc_TypeError, "Error reading meterConfig.txt");
-		return PyString_FromString("Error reading meterConfig.txt");
+		return Py_BuildValue("i", 0);
 	}
-	fclose(meterConfig);
+	fclose(meterConfig);								// Close meter config file
 
-	return PyString_FromString(meterRez);
+	return PyString_FromString(meterRez);						// Return meter resolution
 }
 
+/* Used by python build script to compile Logger module */
 static PyMethodDef methods[] = {
 	{ "init", init, METH_NOARGS, "Performs necessary setup to communicate with GPIO and SPI." },
 	{ "initPins", initPins, METH_NOARGS, "Sets powerGood and romBusy lines low" },
@@ -490,6 +541,8 @@ static PyMethodDef methods[] = {
         { "setRomFree", setRomFree, METH_NOARGS, "Sends a signal to the datalogger that the EEPROM chip is not in use" },
         { "setPowerOff", setPowerOff, METH_NOARGS, "Sends a signal to the datalogger that the Pi is shutting down" },
 	{ "writeToFile", writeToFile, METH_VARARGS, "Writes a list of data to a file" },
+	{ "storePeriod", storePeriod, METH_VARARGS, "Stores a configured clock period to file" },
+	{ "getPeriod", getPeriod, METH_NOARGS, "Returns the time interval between samples" },
 	{ "setID", setID, METH_VARARGS, "Sets a datalogger ID number" },
 	{ "setSiteNumber", setSiteNumber, METH_VARARGS, "Sets a datalogger site number" },
 	{ "getID", getID, METH_NOARGS, "Returns a datalogger ID number" },
@@ -499,6 +552,7 @@ static PyMethodDef methods[] = {
         { NULL, NULL, 0, NULL }
 };
 
+/* Used by python build script to compile Logger module */
 PyMODINIT_FUNC initLogger(void)
 {
         Py_InitModule3("Logger", methods, "Python Module written in C for interacting with specific external hardware");

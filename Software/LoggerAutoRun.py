@@ -11,9 +11,16 @@ Logger.setPowerGood()		# Tell the AVR datalogger that the Raspberry Pi is powere
 dataTuple = Logger.loadData()	# Read the data from the EEPROM chip
 Logger.setRomFree()		# Tell the AVR datalogger that the EEPROM chip is no longer in use.
 
-filename = "/home/pi/Software/data/output_" + '-'.join([str(dataTuple[2]), str(dataTuple[3]), str(dataTuple[1])]) + '_' + '-'.join([str(dataTuple[4]), str(dataTuple[5]), str(dataTuple[6])]) + ".csv"
-#if os.path.isdir("/home/pi/Software/data") == False:
-#	os.system("mkdir /home/pi/Software/data")
+report = [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255] # Gather report data to retrieve activation time
+returnReport = Logger.reportSwap(report)
+
+Logger.storePeriod(int(returnReport[11])) # Store the period found in the returned report (allows timestamps to be calculated in Logger.writeToFile())
+
+# Write data to file
+
+filename= "/home/pi/Software/data/site" + Logger.getSiteNumber().zfill(4) + "_20" + '-'.join([str(dataTuple[1]).zfill(2), str(dataTuple[2]).zfill(2), str(dataTuple[3]).zfill(2)])\
+	+ 'T' + str(dataTuple[4]).zfill(2) + str(dataTuple[5]).zfill(2) + str(dataTuple[6]).zfill(2) + ".csv"
+
 try:
 	if os.path.exists(filename) == False:
 		Logger.writeToFile(dataTuple, filename)
@@ -21,21 +28,23 @@ except:
 	Logger.writeToFile(dataTuple, filename)
 
 # Process the contents of dataTuple here. The format is as follows:
-# Index    |    dataTuple
+# Index		 dataTuple
 # ---------------------------------------------------------
-#  0	         Number of Records
-#  1             Year logging started
-#  2             Month logging started
-#  3             Day logging started
-#  4             Hour logging started
-#  5             Minute logging started
-#  6             Second logging started
-#  7             Data Byte
+#  0		 Number of Records
+#  1		 Year logging started
+#  2		 Month logging started
+#  3		 Day logging started
+#  4		 Hour logging started
+#  5		 Minute logging started
+#  6		 Second logging started
+#  7		 Data Byte
 #  8		 Data Byte
 #  9		 Data Byte
 # 10		 Data Byte
 # ...		 ...
 
-if (dataTuple[4] == 0) and (dataTuple[5] == 0):	# This means that the Pi was turned on at midnight. This is likely by the microcontroller, so it should turn itself off.
-	Logger.setPowerOff()			# Tell the AVR datalogger that the Raspberry Pi is shutting down.
-	os.system("sudo poweroff")		# Shut down the Raspberry Pi
+# CALL DISAGGREGATION CODE HERE
+
+if ((returnReport[3] == 0) or (dataTuple[0] >= Logger.bufferMax())):	# This means that the Pi was turned on at midnight. This is likely by the microcontroller, so it should turn itself off.
+	Logger.setPowerOff()							# Tell the AVR datalogger that the Raspberry Pi is shutting down.
+	os.system("sudo poweroff")						# Shut down the Raspberry Pi

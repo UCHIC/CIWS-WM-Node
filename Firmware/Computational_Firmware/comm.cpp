@@ -94,6 +94,7 @@ void updateReport(unsigned char* report, Date_t* Date, State_t* State)
       EIMSK &= ~(1 << INT0);                            // Disable Sensor interrupt
       State->logging = false;                           // Let the rest of the program know that the microcontroller is no longer logging
       State->readMag = false;                           // Let the rest of the program know that it does not need to read the magnetometer data
+      writeDataSize(State);                             // Update the number of records stored on the EEPROM.
       spiOff();                                         // Set all SPI pins as inputs to avoid bus contention
       PORTB &= ~0x01;                                   // Enable Bus to host computer
       delay(1);
@@ -108,6 +109,15 @@ void updateReport(unsigned char* report, Date_t* Date, State_t* State)
       PORTB |= 0x01;                                    // Disable Bus to host computer
       spiInit();                                        // Re-initialize SPI module
     }
+  }
+  if(report[11] == 0xFF)			// If the received byte is 0xFF (READ)
+  {
+    report[11] = State->interval;			// Write back the old value
+  }
+  else						// Else
+  {
+    State->interval = report[11];			// Store the new interval from the Raspberry Pi
+    setClockPeriod(State->interval);			// Set a new clock period from the interval
   }
  
   return;

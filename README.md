@@ -1,12 +1,18 @@
 # CIWS-WM-Node
 
-This repository contains hardware and software designs for a computationally-enabled water meter datalogger. The hardware is made up of two parts. One part is a Raspberry Pi embedded computer that serves as the computational resource. The Raspberry Pi is coupled with a data acquisition device that is based on an Arduino Pro and is similar to our simplified datalogger for magnetically-driven residential water meters.
+This repository contains hardware and software designs for a computationally-enabled water meter datalogger. The hardware is made up of two parts. One part is a Raspberry Pi embedded computer that serves as the computational resource. The Raspberry Pi is coupled with a data acquisition device that is based on an Arduino Pro and is similar to our simplified datalogger for magnetically-driven residential water meters (See UCHIC/CIWS-MWM-Logger).
 
 The data acquisition device is primarily responsible for processing magnetometer data and storing flow data from the water meter. Secondarily, it controls power to the Raspberry Pi in order to conserve battery life and reduce overall power consumption/requirements. Once powered, the Raspberry Pi retreives the flow data and processes it to compute useful summaries of water use and identify water end-uses.
 
-The 'Firmware' directory holds the firmware for the data acquisition device, or AVR Datalogger. The 'Software' directory holds the software for the Raspberry Pi.
+The 'Firmware' directory contains the firmware for the data acquisition device, or AVR Datalogger.
 
-This computational development is still under development.
+The 'Software' directory contains the software for the Raspberry Pi.
+
+The 'Hardware' directory contains hardware design information.
+
+The 'Docs' directory contains documentation
+
+This device is still under development.
 
 ## Cyberinfrastructure for Intelligent Water Supply (CIWS) 
 

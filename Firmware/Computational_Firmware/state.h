@@ -23,6 +23,7 @@ typedef struct
   volatile bool powerGood;
   volatile bool romFree;
   volatile bool RPiFalseON;
+  volatile byte interval;
 } State_t;
 
 // Signal State Struct

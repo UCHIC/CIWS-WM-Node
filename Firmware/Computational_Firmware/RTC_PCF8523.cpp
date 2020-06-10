@@ -123,12 +123,57 @@ void loadDateTime(Date_t* Date)
   return;
 }
 
+/***********************************************\
+ * Name:    copyDateTime
+ * Purpose: Copies data from one Date_t struct
+ *          to another.
+ *
+ * Pseudocode:
+ *   Copy years data
+ *   Copy months data
+ *   Copy days data
+ *   Copy hours data
+ *   Copy minutes data
+ *   Copy seconds data
+\***********************************************/
+
 void copyDateTime(Date_t* Date1, Date_t* Date2)
 {
-  Date2->years   = Date1->years;
-  Date2->months  = Date1->months;
-  Date2->days    = Date1->days;
-  Date2->hours   = Date1->hours;
-  Date2->minutes = Date1->minutes;
-  Date2->seconds = Date1->seconds;
+  Date2->years   = Date1->years;    // Copy years data
+  Date2->months  = Date1->months;   // Copy months data
+  Date2->days    = Date1->days;     // Copy days data
+  Date2->hours   = Date1->hours;    // Copy hours data
+  Date2->minutes = Date1->minutes;  // Copy minutes data
+  Date2->seconds = Date1->seconds;  // Copy seconds data
+}
+
+/***********************************************\
+ * Name:    setClockPeriod
+ * Purpose: Changes the output clock period
+ *          of the Real Time Clock, which
+ *          controls the frequency at which the
+ *          datalogger writes data to the SD.
+ * Inputs:  8-bit clock period in seconds.
+ * Outputs: No function outputs.
+ *          
+ * Pseudocode:
+ *   Power on TWI interface
+ *   Begin a transmission to the RTC
+ *   Write the register number
+ *   Write the value to write
+ *   Power down TWI interface
+\***********************************************/
+
+void setClockPeriod(uint8_t period)
+{
+  twiPowerUp();
+  
+  Wire.beginTransmission(deviceAddr);
+  Wire.write(reg_Tmr_A_reg);
+  Wire.write(period);
+  Wire.endTransmission();
+
+  twiPowerDown();
+
+  return;
 }

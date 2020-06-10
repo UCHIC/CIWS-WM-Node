@@ -1,61 +1,127 @@
 #!/bin/bash
-# This bash script builds and installs the Logger module for python 2.7.
-# Dependancies: python-dev
-#		wiringpi
 
-# TODO: need to setup UART. UART setup is a bit funky.
-#	1) Add enable_uart=1 to /boot/config.txt
-#	2) Add core_freq=250 to /boot/config.txt (or whatever core frequency we wanna run at)
-#	3) sudo systemctl stop serial-getty@ttyS0.service
-#	4) sudo systemctl disable serial-getty@ttyS0.service
-#	5) Remove console=serial0,115200 from /boot/cmdline.txt
+############################################################################################################################################
+################################################################# setup.sh #################################################################
+############################################################################################################################################
+#                                                                                                                                          #
+# This bash script builds and installs the Logger module for python 2.7.                                                                   #
+# The actions taken by this script are separated into five steps:                                                                          #
+#                                                                                                                                          #
+#   1)  Run raspi-config                                                                                                                   #
+#   2)  Install libraries                                                                                                                  #
+#   3)  Replace files                                                                                                                      #
+#   4)  Compile code                                                                                                                       #
+#   5)  Reboot                                                                                                                             #
+#                                                                                                                                          #
+# Each step is documented further with important notes describing what the script is doing and why.                                        #
+#                                                                                                                                          #
+# The following changes are applied to configuration files (<> Denotes text actually added or removed):                                    #
+#   1)  Add <enable_uart=1> to /boot/config.txt                                                                                            #
+#   2)  Add <core_freq=250> to /boot/config.txt (The UART baudrate is dependent on the GPU core frequency, so it must be made constant)    #
+#   3)  Add <dtparam=i2c_arm=on> to /boot/config.txt                                                                                       #
+#   4)  Add <dtparam=spi=on> to /boot/config.txt                                                                                           #
+#   5)  Add <sudo systemctl stop serial-getty@ttyS0.service> to /etc/rc.local                                                              #
+#   6)  Add <sudo systemctl disable serial-getty@ttyS0.service> to /etc/rc.local                                                           #
+#   7)  Add <sudo systemctl stop systemd-timesyncd> to /etc/rc.local                                                                       #
+#   8)  Add <sudo systemctl disable systemd-timesyncd> to /etc/rc.local                                                                    #
+#   9)  Remove <console=serial0,115200> from /boot/cmdline.txt                                                                             #
+#  10)  Add <spidev.bufsiz=65536> to /boot/cmdline.txt                                                                                     #
+#                                                                                                                                          #
+############################################################################################################################################
 
-# NEW TODO: Method is unreliable. Need to simply replace existing files with our own.
+#################################################################
+###################### 1) Run raspi-config ######################
+#################################################################
 
-echo "Checking /boot/cmdline.txt for spidev buffer size..."
+# NOTES:
 
-grep -q -F 'spidev.bufsiz=65536' /boot/cmdline.txt
-if [ $? -ne 0 ]; then
-	ed -s /boot/cmdline.txt < <(printf '%s\n' 1 a " spidev.bufsiz=65536" . 1,2j w q)
-	echo "Spidev buffer size added. Reboot required in order to complete setup."
+## This section is necessary because a WiFi connection is      ##
+## required to install python-dev and wiringpi packages in     ##
+## step 2). WiFi is also needed for HTTP posting at this point ##
+## in development; however, other options are being explored.  ##
+
+echo "The script raspi-config will now run."
+echo "Use this to set up your WiFi and keyboard layout."
+
+read -p "Press Enter to continue. "
+
+raspi-config
+
+#################################################################
+###################### 2) Install libraries #####################
+#################################################################
+
+# NOTES:
+
+## These are development packages used in the software on this ##
+## Raspberry Pi. The package python-dev is used to build the   ##
+## Logger python module, while wiringpi provides an interface  ##
+## to the GPIO pins on the Raspberry Pi for the C programming  ##
+## language.                                                   ##
+
+echo "Installing python-dev, python-smbus, and wiringpi..."
+
+apt-get update
+apt-get install python-dev python-smbus wiringpi
+
+#################################################################
+####################### 3) Replace files ########################
+#################################################################
+
+# NOTES:
+
+## If the .original configuration files exist, that means they ##
+## were already saved, and should not be overwritten. If they  ##
+## do not exist, the current configuration files will be       ##
+## appended with .original. The custom configuration files     ##
+## from the repository will be copied to their respective      ##
+## locations, thus changing the start-up configuration of the  ##
+## Raspberry Pi. The C program uuidcopy looks up the correct   ##
+## value for the field "root=PARTUUID=" for cmdline.txt, as    ##
+## this value may change across different installations.       ##
+
+echo "Configuring the Raspberry Pi..."
+
+if [[ ! -f "/boot/cmdline.txt.original" ]]
+then
+	mv /boot/cmdline.txt /boot/cmdline.txt.original
 fi
 
-echo "Checking /boot/cmdline.txt for enabled serial console..."
-
-grep -q -F 'console=serial0,115200' /boot/cmdline.txt
-if [ $? -eq 0 ]; then
-	sed -i -e 's/console=serial0,115200//g' /boot/cmdline.txt
-	echo "Disabled Serial Console. Reboot required in order to complete setup."
+if [[ ! -f "/boot/config.txt.original" ]]
+then
+	mv /boot/config.txt /boot/config.txt.original
 fi
 
-sed -i -e 's/exit 0//g' /etc/rc.local
-
-echo "Checking /etc/rc.local to disable serial-getty service..."
-
-grep -q -F 'sudo systemctl disable serial-getty@ttyS0.service' /etc/rc.local
-if [ $? -ne 0 ]; then
-	echo 'sudo systemctl stop serial-getty@ttyS0.service' >> /etc/rc.local
-	echo 'sudo systemctl disable serial-getty@ttyS0.service' >> /etc/rc.local
-	echo "Disabled serial-getty service. Reboot required in order to complete setup."
+if [[ ! -f "/etc/rc.local.original" ]]
+then
+	mv /etc/rc.local /etc/rc.local.original
 fi
 
-grep -q -F 'sudo python /home/pi/Software/LoggerAutoRun.py &' /etc/rc.local
-if [ $? -ne 0 ]; then
-	echo 'sudo python /home/pi/Software/LoggerAutoRun.py &' >> /etc/rc.local
-	echo "Set rc.local to run LoggerAutoRun.py. Reboot required in order to complete setup."
+if [[ ! -f "/home/pi/.bashrc.original" ]]
+then
+	mv /home/pi/.bashrc /home/pi/.bashrc.original
 fi
 
-echo 'exit 0' >> /etc/rc.local
+cp cmdline.txt /boot
+cp config.txt /boot
+cp rc.local /etc
+cp bashrc /home/pi/.bashrc
 
-echo "Checking /boot/config.txt for enabled UART..."
+gcc uuidcopy.c -o uuidcopy
+./uuidcopy
+rm -f uuidcopy
 
-grep -q -F 'enable_uart=1' /boot/config.txt
-if [ $? -ne 0 ]; then
-	echo 'enable_uart=1' /boot/config.txt
-	echo 'core_freq=250' /boot/config.txt
-fi
+#################################################################
+######################## 4) Compile code ########################
+#################################################################
 
-echo "Building module Logger"
+## NOTES:
+
+## This section compiles logger.c and builds a python module   ##
+## called Logger. Logger is usable in any python script on the ##
+## Raspberry Pi by calling <import Logger> in the script.      ##
+
+echo "Building Logger python module..."
 
 rm -f -r build
 rm -f /usr/local/lib/python2.7/dist-packages/Logger*
@@ -78,4 +144,46 @@ else
 	echo "Directory for configuration data found"
 fi
 
-echo "Setup finished."
+if [[ ! -f "/home/pi/Software/config/clockPeriod.txt" ]]
+then
+	echo "4" > /home/pi/Software/config/clockPeriod.txt
+fi
+
+if [[ ! -f "/home/pi/Software/config/IDconfig.txt" ]]
+then
+	echo "1" > /home/pi/Software/config/IDconfig.txt
+fi
+
+if [[ ! -f "/home/pi/Software/config/meterConfig.txt" ]]
+then
+	echo "0.033" > /home/pi/Software/config/meterConfig.txt
+fi
+
+if [[ ! -f "/home/pi/Software/config/siteConfig.txt" ]]
+then
+	echo "1" > /home/pi/Software/config/siteConfig.txt
+fi
+
+#################################################################
+########################### 5) Reboot ###########################
+#################################################################
+
+## NOTES:
+
+## The reboot is required mainly because of the configuration  ##
+## files, which are read when the Raspberry Pi boots. Instead  ##
+## of calling reboot, however, a poweroff command is executed  ##
+## instead. This is because when the Raspberry Pi powers off,  ##
+## the microcontroller cuts power to the Raspberry Pi without  ##
+## checking to see if the Raspberry Pi is powering on again.   ##
+## This introduces a condition in which the Raspberry Pi may   ##
+## lose power while booting. Therefore, it is up to the user   ##
+## to power the system back on again after running this        ##
+## script.                                                     ##
+
+echo " "
+echo "Setup finished. A restart is required for changes to take effect."
+echo " "
+read -p "Press Enter to power off the Raspberry Pi."
+
+poweroff

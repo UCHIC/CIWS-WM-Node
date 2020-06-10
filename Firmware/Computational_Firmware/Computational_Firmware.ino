@@ -87,14 +87,16 @@
 
 #define BUFFER_MAX 24000
 
-volatile State_t State;             // System State structure
-volatile Date_t Date;               // System Time and Date structure
-volatile Date_t Date_Snapshot;      //
-volatile SignalState_t SignalState; // Struct containing signal data from magnetometer
-volatile unsigned char report[11];   // Array containing system information. The report is passed between the microcontroller and the host computer (designed for a Raspberry Pi)
-volatile char reportIndex = 0;      // current index of the above report
-bool countDown = false;             // Tells program to count every four seconds until it's time to power off the host computer.
-char powerOff_Count = 0;            // Stores the count as described above.
+#define START 0xEE
+
+volatile State_t State;                       // System State structure
+volatile Date_t Date;                         // System Time and Date structure
+volatile Date_t Date_Snapshot;
+volatile SignalState_t SignalState;           // Struct containing signal data from magnetometer
+volatile unsigned char report[REPORT_SIZE];   // Array containing system information. The report is passed between the microcontroller and the host computer (designed for a Raspberry Pi)
+volatile char reportIndex = 0;                // current index of the above report
+bool countDown = false;                       // Tells program to count every four seconds until it's time to power off the host computer.
+char powerOff_Count = 0;                      // Stores the count as described above.
 byte current_day = 0;
 
 void setup()
@@ -115,7 +117,7 @@ void setup()
 
   rtcTransfer(reg_Tmr_CLKOUT_ctrl, WRITE, 0x3A);  // Setup RTC Timer
   rtcTransfer(reg_Tmr_A_freq_ctrl, WRITE, 0x02);
-  rtcTransfer(reg_Tmr_A_reg, WRITE, 0x04);
+  rtcTransfer(reg_Tmr_A_reg, WRITE, State.interval);
   rtcTransfer(reg_Control_2, WRITE, 0x02);
   rtcTransfer(reg_Control_3, WRITE, 0x80);
 
@@ -137,7 +139,8 @@ void setup()
   report[8] = 0;                                              // Total pulses (byte 1)
   report[9] = 0;                                              // Total pulses (byte 2)
   report[10] = 0;                                             // Logging (y/n = 1/0)
-
+  report[11] = 4;                                             // Time between logged samples (default = 4 seconds)
+  
   sei();                          // Enable interrupts
   disableUnneededPeripherals();   // Disable peripherals not in use (WARNING: FUNCTION MUST NOT DISABLE TIMERS)
 }
@@ -168,14 +171,26 @@ void loop()
     if(usartReceiveComplete())            // If the microcontroller has received a byte from the host computer
     {
       unsigned char temp = UART_Receive();  // Store new byte
-      UART_Transmit(report[reportIndex]);   // Transmit next byte
-      report[reportIndex] = temp;           // Update the current report byte with the newly received byte
-      if((++reportIndex) > 10)               // If the report has been filled up
-      {
-        reportIndex = 0;                      // Reset the report index
-        State.newReport = true;               // Let the rest of the program know that a new report is ready to be serviced
-      }
 
+      if(temp == START)      // If new byte is an unescaped START
+      {
+        for(int i = reportIndex; i < REPORT_SIZE; i++)
+        {
+          report[i] = 0xFF;
+        }
+        reportIndex = 0;                                // reset reportIndex
+        State.newReport = true;
+      }
+      else
+      {
+        UART_Transmit(report[reportIndex]);   // Transmit next byte
+        report[reportIndex] = temp;           // Update the current report byte with the newly received byte
+        if((++reportIndex) >= REPORT_SIZE)    // If the report has been filled up
+        {
+          reportIndex = 0;                      // Reset the report index
+          State.newReport = true;               // Let the rest of the program know that a new report is ready to be serviced
+        }
+      }
     }
 /*
     if(((PINC & 0x01) == 0x01) && State.romFree)
@@ -198,7 +213,7 @@ void loop()
       powerOff_Count = 0;                               // Initialize the counter.
     }
 
-    if(powerOff_Count > 3)                            // If the count exceeds three
+    if(powerOff_Count > (12 / State.interval))          // If the count exceeds 12 seconds (Note, this is VERY rough)
     {
       powerOff_Count = 0;                               // Reset the counter
       countDown = false;                                // Let the rest of the program know that it is know longer counting

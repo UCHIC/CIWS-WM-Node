@@ -12,6 +12,8 @@
 #define BAUD 9600
 #define UBRR FOSC/16/BAUD-1
 
+#define REPORT_SIZE 12
+
 #define usartReceiveComplete() ((UCSR0A&0x80)==0x80)              // Check to see if a new byte has been received
 
 void updateReport(unsigned char* report, Date_t* Date, State_t* State);    // Update information regarding System State and Date/Time based on the new report (11 received bytes)

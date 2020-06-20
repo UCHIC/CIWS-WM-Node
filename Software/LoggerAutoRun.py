@@ -44,6 +44,7 @@ except:
 # ...		 ...
 
 # CALL DISAGGREGATION CODE HERE
+# CALL HTTPS POST REQUEST CODE HERE
 
 if ((returnReport[3] == 0) or (dataTuple[0] >= Logger.bufferMax())):	# This means that the Pi was turned on at midnight. This is likely by the microcontroller, so it should turn itself off.
 	Logger.setPowerOff()							# Tell the AVR datalogger that the Raspberry Pi is shutting down.

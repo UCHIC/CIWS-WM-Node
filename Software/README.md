@@ -1,4 +1,4 @@
-# Instructions:</br></br>
+## Instructions:</br></br>
 Add this folder (Software) to the directory `/home/pi` of your Raspberry Pi 3.</br>
 From the Software directory, run the following commands:
 ```
@@ -13,5 +13,24 @@ python-smbus
 wiringpi
 ```
 The script setup.sh will run raspi-config so that the network interface may be configured if needed.
+
+## Overview:</br></br>
+Most of the Software functionality of the WM-Node device is described in the file logger.c. The C code is compiled as a Python module by the scritp setup.sh, and is used in the Python scripts in this directory.
+
+### Files:
+- `LoggerAutoRun.py`: Runs on every power up. Reads EEPROM.
+- `LoggerReadRom.py`: Runs when a logging session finishes. Reads EEPROM.
+- `LoggerReportSwap.py`: Communicates data with the microcontroller.
+- `LoggerShell_CLI.py`: User interfaces for the datalogger.
+- `MCP3425.py`: Reads battery level using an MCP3425 ADC.
+- `README.md`: This file.
+- `bashrc`: Configuration file for the Raspberry Pi.
+- `cmdline.txt`: Configuration file for the Raspberry Pi.
+- `config.txt`: Configuration file for the Raspberry Pi.
+- `logger.c`: Defines all of the functions use in the Logger* python scripts.
+- `rc.local`: Configuration file for the Raspberry Pi.
+- `setup.py`: Builds Python module Logger from logger.c.
+- `setup.sh`: Sets up Raspberry Pi device using the files in this directory.
+- `uuidcopy.c`: Copies the value for the field `root=PARTUUID=` from the original `cmdline.txt` and stores it in the new `cmdline.txt`.
 
 WARNING: This code is still under development and not quite ready for use</br>

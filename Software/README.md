@@ -1,21 +1,21 @@
 ## Instructions:</br></br>
-Add this folder (Software) to the directory `/home/pi` of your Raspberry Pi 3.</br>
-From the Software directory, run the following commands:
+Add this folder (`Software`) to the directory `/home/pi` of your Raspberry Pi 3.</br>
+From the `Software` directory, run the following commands:
 ```
 chmod +x setup.sh
 sudo ./setup.sh
 ```
-You can now use the Logger module in Python. Note that this was built with Python 2.7. The script will power off the Raspberry Pi, as a reboot is required for all changes to take effect.</br></br>
-The following dependencies should be automagically installed by running setup.sh on the Raspberry Pi, assuming the Raspberry Pi is connected to the internet.
+You can now use the `Logger` module in Python. Note that this was built with Python 2.7. The script will power off the Raspberry Pi, as a reboot is required for all changes to take effect.</br></br>
+The following dependencies should be automagically installed by running `setup.sh` on the Raspberry Pi, assuming the Raspberry Pi is connected to the internet.
 ```
 python-dev
 python-smbus
 wiringpi
 ```
-The script setup.sh will run raspi-config so that the network interface may be configured if needed.
+The script `setup.sh` will run `raspi-config` so that the network interface may be configured if needed.
 
 ## Overview:</br></br>
-Most of the Software functionality of the WM-Node device is described in the file logger.c. The C code is compiled as a Python module by the scritp setup.sh, and is used in the Python scripts in this directory.
+Most of the Software functionality of the WM-Node device is described in the file `logger.c`. The C code is compiled as a Python module by the script `setup.sh`, and is used in the Python scripts in this directory.
 
 ### Files:
 - `LoggerAutoRun.py`: Runs on every power up. Reads EEPROM.
@@ -27,9 +27,9 @@ Most of the Software functionality of the WM-Node device is described in the fil
 - `bashrc`: Configuration file for the Raspberry Pi.
 - `cmdline.txt`: Configuration file for the Raspberry Pi.
 - `config.txt`: Configuration file for the Raspberry Pi.
-- `logger.c`: Defines all of the functions use in the Logger* python scripts.
+- `logger.c`: Defines all of the functions use in the `Logger*` python scripts.
 - `rc.local`: Configuration file for the Raspberry Pi.
-- `setup.py`: Builds Python module Logger from logger.c.
+- `setup.py`: Builds Python module Logger from `logger.c`.
 - `setup.sh`: Sets up Raspberry Pi device using the files in this directory.
 - `uuidcopy.c`: Copies the value for the field `root=PARTUUID=` from the original `cmdline.txt` and stores it in the new `cmdline.txt`.
 

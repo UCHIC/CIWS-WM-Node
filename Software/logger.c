@@ -472,6 +472,45 @@ static PyObject* setMeterResolution(PyObject* self, PyObject* args)
 	return Py_None;
 }
 
+static PyObject* setTransmission(PyObject* self, PyObject* args)
+{
+	FILE* transmissionConfig;
+	char* newTransmissionSetting;
+	transmissionConfig = fopen("/home/pi/Software/config/transmissionConfig.txt", "w");	// Open transmission config file
+	if(transmissionConfig == NULL)								// Check file
+	{
+		return PyString_FromString("Could not open transmissionConfig.txt");
+	}
+	if(!PyArg_ParseTuple(args, "s", &newTransmissionSetting))				// Parse arguments
+	{
+		PyErr_SetString(PyExc_TypeError, "Expected a string.");				// If parsing fails, set error and return.
+		return PyString_FromString("Bad arguments");
+	}
+	fprintf(transmissionConfig, "%s\n", newTransmissionSetting);				// Write new transmission setting
+	fclose(transmissionConfig);								// Close transmission config file
+
+	return Py_None;
+}
+
+static PyObject* getTransmission(PyObject* self, PyObject* args)
+{
+	FILE* transmissionConfig;
+	char transmissionSetting[] = {0, 0};
+	transmissionConfig = fopen("/home/pi/Software/config/transmissionConfig.txt", "r");	// Open transmission config file
+	if(transmissionConfig == NULL)								// Check file
+	{
+		return Py_BuildValue("i", 0);
+	}
+	int scan = fscanf(transmissionConfig, "%s", transmissionSetting);			// Read transmission setting
+	if(scan == 0)
+	{
+		return Py_BuildValue("i", 0);
+	}
+	fclose(transmissionConfig);								// Close transmission config file
+
+	return PyString_FromString(transmissionSetting);					// Return transmission setting
+}
+
 static PyObject* getID(PyObject* self, PyObject* args)
 {
 	FILE* IDconfig;

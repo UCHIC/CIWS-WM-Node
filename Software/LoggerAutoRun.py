@@ -27,6 +27,13 @@ try:
 except:
 	Logger.writeToFile(dataTuple, filename)
 
+# Determine what data to transmit
+
+try:
+	transmission = Logger.getTransmission()
+except:
+	transmission = '3' # If reading the settings file fails, default to transmitting both raw and disaggregated data
+
 # Process the contents of dataTuple here. The format is as follows:
 # Index		 dataTuple
 # ---------------------------------------------------------
@@ -44,7 +51,14 @@ except:
 # ...		 ...
 
 # CALL DISAGGREGATION CODE HERE
+
 # CALL HTTPS POST REQUEST CODE HERE
+# if transmission == '1':
+	# Transmit raw data file
+# elif transmission == '2':
+	# Transmit disaggregated data file
+# elif transmission == '3':
+	# Transmit both data files
 
 if ((returnReport[3] == 0) or (dataTuple[0] >= Logger.bufferMax())):	# This means that the Pi was turned on at midnight. This is likely by the microcontroller, so it should turn itself off.
 	Logger.setPowerOff()							# Tell the AVR datalogger that the Raspberry Pi is shutting down.

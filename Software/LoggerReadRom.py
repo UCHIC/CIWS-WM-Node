@@ -18,5 +18,20 @@ try:
 except:
 	Logger.writeToFile(dataTuple, filename)
 
+# Determine what data to transmit
+
+try:
+        transmission = Logger.getTransmission()
+except:
+        transmission = '3' # If reading the settings file fails, default to transmitting both raw and disaggregated data
+
 # CALL DISAGGREGATION CODE HERE
+
 # CALL HTTPS POST REQUEST CODE HERE
+# if transmission == '1':
+        # Transmit raw data file
+# elif transmission == '2':
+        # Transmit disaggregated data file
+# elif transmission == '3':
+        # Transmit both data files
+

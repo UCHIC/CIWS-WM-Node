@@ -181,6 +181,23 @@ while(exit == 0):											# Run LoggerShell until the exit flag is set
 			meterRez = "Error reading meter resolution"
 		print "> Meter Resolution:", meterRez									# Display the current meter resolution
 
+	elif(userInput == "set-transmission"):									# User Option: Setting for which data set to transmit
+		print "> 1 - Only transmit raw data"									# Display options to user
+		print "> 2 - Only transmit disaggregated data"
+		print "> 3 - Transmit all data"
+		transmission = raw_input("> New Transmission: ")							# Prompt user for setting
+		Logger.setTransmission(transmission)									# Save setting
+
+	elif(userInput == "get-transmission"):									# User Option: Display setting for which data set to transmit
+		print "> 1 - Only transmit raw data"									# Display options to user
+		print "> 2 - Only transmit disaggregated data"
+		print "> 3 - Transmit all data"
+		try:
+			transmission = Logger.getTransmission()								# Retrieve saved setting
+		except:
+			transmission = "Error reading transmission settings"						# Display error if error occurs
+		print "> Transmission Setting:", transmission								# Display transmission setting to user
+
 	elif(userInput == "water-flow"):									# User Option: Display current water flow information
 		command[0] = "python LoggerReportSwap.py 255 255 255 255 255 255 255 255 255 255 255 255"		# Command to read report data
 		process = subprocess.Popen(command[0], stdout=subprocess.PIPE, shell=True)				# Create a sub-process to run command[0]

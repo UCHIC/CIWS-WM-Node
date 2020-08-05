@@ -25,9 +25,12 @@ def move(csv,filename):
 	os.rename(csv, os.path.join('/home/pi/Software/sentData/', filename))
 
 def file_uploader(csv):
-	with open(csv, 'rb') as data_file:
-		files = [('data_file[]', data_file), ]
-		upload_token = requests.post(upload_token_url, data={'token': client_passcode, 'filenames': csv})
-		upload_response = requests.post(upload_url, headers={'Authorization': 'Bearer {upload_token.text}'}, files=files)
-		rsp = upload_response.text
-		print (rsp)
+	try:
+		with open(csv, 'rb') as data_file:
+			files = [('data_file[]', data_file), ]
+			upload_token = requests.post(upload_token_url, data={'token': client_passcode, 'filenames': csv})
+			upload_response = requests.post(upload_url, headers={'Authorization': 'Bearer {upload_token.text}'}, files=files)
+			rsp = upload_response.text
+			print (rsp)
+	except:
+		print('Failed to transmit.')

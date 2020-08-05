@@ -1,5 +1,6 @@
 import Logger
 import os
+import SendData
 
 Logger.init()                   # Initialzie the Logger Python module.
 Logger.setRomBusy()             # Tell the AVR datalogger that the EEPROM chip is in use
@@ -14,16 +15,18 @@ filename= "/home/pi/Software/data/site" + Logger.getSiteNumber().zfill(4) + "_20
 
 try:
 	if os.path.exists(filename) == False:
-        	Logger.writeToFile(dataTuple, filename)
+		Logger.writeToFile(dataTuple, filename)
 except:
 	Logger.writeToFile(dataTuple, filename)
 
 # Determine what data to transmit
 
 try:
-        transmission = Logger.getTransmission()
+	transmission = Logger.getTransmission()
 except:
-        transmission = '3' # If reading the settings file fails, default to transmitting both raw and disaggregated data
+	transmission = '3' # If reading the settings file fails, default to transmitting both raw and disaggregated data
+
+SendData.processData(transmission)
 
 # CALL DISAGGREGATION CODE HERE
 

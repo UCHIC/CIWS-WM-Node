@@ -492,6 +492,26 @@ static PyObject* setTransmission(PyObject* self, PyObject* args)
 	return Py_None;
 }
 
+static PyObject* setDataStore(PyObject* self, PyObject* args)
+{
+	FILE* dataStoreConfig;
+	char* newDataStore;
+	dataStoreConfig = fopen("/home/pi/Software/config/dataStoreConfig.txt", "w");		// Open data storage config file
+	if(dataStoreConfig == NULL)								// Check file
+	{
+		return PyString_FromString("Could not open dataStoreConfig.txt");
+	}
+	if(!PyArg_ParseTuple(args, "s", &newDataStore))						// Parse arguments
+	{
+		PyErr_SetString(PyExc_TypeError, "Expected a string.");				// If parsing fails, set error and return
+		return PyString_FromString("Bad arguments");
+	}
+	fprintf(dataStoreConfig, "%s\n", newDataStore);						// Write new data storage setting
+	fclose(dataStoreConfig);								// Close data storage config file
+	
+	return Py_None;
+}
+
 static PyObject* getTransmission(PyObject* self, PyObject* args)
 {
 	FILE* transmissionConfig;
@@ -509,6 +529,25 @@ static PyObject* getTransmission(PyObject* self, PyObject* args)
 	fclose(transmissionConfig);								// Close transmission config file
 
 	return PyString_FromString(transmissionSetting);					// Return transmission setting
+}
+
+static PyObject* getDataStore(PyObject* self, PyObject* args)
+{
+	FILE* dataStoreConfig;
+	char dataStore[] = {0, 0};
+	dataStoreConfig = fopen("/home/pi/Software/config/dataStoreConfig.txt", "r");		// Open data storage config file
+	if(dataStoreConfig == NULL)								// Check file
+	{
+		return Py_BuildValue("i", 0);
+	}
+	int scan = fscanf(dataStoreConfig, "%s", dataStore);					// Read data storage setting
+	if(scan == 0)
+	{
+		return Py_BuildValue("i", 0);
+	}
+	fclose(dataStoreConfig);								// Close data storage config file
+	
+	return PyString_FromString(dataStore);							// Return data storage setting
 }
 
 static PyObject* getID(PyObject* self, PyObject* args)
@@ -585,7 +624,9 @@ static PyMethodDef methods[] = {
 	{ "setID", setID, METH_VARARGS, "Sets a datalogger ID number" },
 	{ "setSiteNumber", setSiteNumber, METH_VARARGS, "Sets a datalogger site number" },
 	{ "setTransmission", setTransmission, METH_VARARGS, "Sets data transmission settings" },
+	{ "setDataStore", setDataStore, METH_VARARGS, "Sets data storage settings" },
 	{ "getTransmission", getTransmission, METH_NOARGS, "Reads data transmission settings" },
+	{ "getDataStore", getDataStore, METH_NOARGS, "Reads data storage settings" },
 	{ "getID", getID, METH_NOARGS, "Returns a datalogger ID number" },
 	{ "getSiteNumber", getSiteNumber, METH_NOARGS, "Returns a datalogger site number" },
 	{ "setMeterResolution", setMeterResolution, METH_VARARGS, "Sets a datalogger meter resolution" },

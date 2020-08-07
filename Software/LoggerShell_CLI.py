@@ -182,6 +182,7 @@ while(exit == 0):											# Run LoggerShell until the exit flag is set
 		print "> Meter Resolution:", meterRez									# Display the current meter resolution
 
 	elif(userInput == "set-transmission"):									# User Option: Setting for which data set to transmit
+		print "> 0 - No transmission"
 		print "> 1 - Only transmit raw data"									# Display options to user
 		print "> 2 - Only transmit disaggregated data"
 		print "> 3 - Transmit all data"
@@ -189,6 +190,7 @@ while(exit == 0):											# Run LoggerShell until the exit flag is set
 		Logger.setTransmission(transmission)									# Save setting
 
 	elif(userInput == "get-transmission"):									# User Option: Display setting for which data set to transmit
+		print "> 0 - No transmission"
 		print "> 1 - Only transmit raw data"									# Display options to user
 		print "> 2 - Only transmit disaggregated data"
 		print "> 3 - Transmit all data"
@@ -197,6 +199,23 @@ while(exit == 0):											# Run LoggerShell until the exit flag is set
 		except:
 			transmission = "Error reading transmission settings"						# Display error if error occurs
 		print "> Transmission Setting:", transmission								# Display transmission setting to user
+
+	elif(userInput == "set-data-storage"):									# User Option: Setting for which data set to store
+		print "> 1 - Only store raw data"									# Display options to user
+		print "> 2 - Only store disaggregated data"
+		print "> 3 - Store all data"
+		dataStore = raw_input("New data storage: ")								# Prompt user for setting
+		Logger.setDataStore(dataStore)										# Save setting
+
+	elif(userInput == "get-data-storage"):									# User Option: Display setting for which data set to store
+		print "> 1 - Only store raw data"									# Display options to user
+		print "> 2 - Only store disaggregated data"
+		print "> 3 - Store all data"
+		try:
+			dataStore = Logger.getDataStore()								# Retrieve saved setting
+		except:
+			dataStore = "Error reading data storage settings"						# Display error if error occurs
+		print "> Data storage setting:", dataStore								# Display data storage setting to user
 
 	elif(userInput == "water-flow"):									# User Option: Display current water flow information
 		command[0] = "python LoggerReportSwap.py 255 255 255 255 255 255 255 255 255 255 255 255"		# Command to read report data

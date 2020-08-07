@@ -584,6 +584,8 @@ static PyMethodDef methods[] = {
 	{ "getPeriod", getPeriod, METH_NOARGS, "Returns the time interval between samples" },
 	{ "setID", setID, METH_VARARGS, "Sets a datalogger ID number" },
 	{ "setSiteNumber", setSiteNumber, METH_VARARGS, "Sets a datalogger site number" },
+	{ "setTransmission", setTransmission, METH_VARARGS, "Sets data transmission settings" },
+	{ "getTransmission", getTransmission, METH_NOARGS, "Reads data transmission settings" },
 	{ "getID", getID, METH_NOARGS, "Returns a datalogger ID number" },
 	{ "getSiteNumber", getSiteNumber, METH_NOARGS, "Returns a datalogger site number" },
 	{ "setMeterResolution", setMeterResolution, METH_VARARGS, "Sets a datalogger meter resolution" },

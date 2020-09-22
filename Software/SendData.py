@@ -7,9 +7,9 @@ client_passcode = 'amVmZl90aGlua3NfaGUnc19jb29s'
 
 
 def processData(toSend, toStore):
-	os.chdir('/home/pi/Software3/data/')
+	os.chdir('/home/pi/Software/data/')
 	cd = os.getcwd() + "/"
-	out = '/home/pi/Software3/savedData/'
+	out = '/home/pi/Software/savedData/'
 	if not os.path.exists(out):
 		os.makedirs(out)
 	types = ('*.CSV', '*.csv')

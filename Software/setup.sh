@@ -4,7 +4,7 @@
 ################################################################# setup.sh #################################################################
 ############################################################################################################################################
 #                                                                                                                                          #
-# This bash script builds and installs the Logger module for python 2.7.                                                                   #
+# This bash script builds and installs the Logger module for python 3.7.                                                                   #
 # The actions taken by this script are separated into five steps:                                                                          #
 #                                                                                                                                          #
 #   1)  Install libraries                                                                                                                  #

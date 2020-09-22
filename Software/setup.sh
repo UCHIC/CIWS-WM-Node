@@ -40,7 +40,7 @@
 ## to the GPIO pins on the Raspberry Pi for the C programming  ##
 ## language.                                                   ##
 
-echo "Installing python3-dev python3-smbus wiringpi python3-requests python3-pandas pyhton3-seaborn pyhton3-sklearn..."
+echo "Installing python3-dev python3-smbus wiringpi python3-requests python3-pandas python3-seaborn python3-sklearn..."
 
 apt-get update
 apt-get install python3-dev python3-smbus wiringpi python3-requests python3-pandas python3-seaborn python3-sklearn

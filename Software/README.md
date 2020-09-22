@@ -1,5 +1,5 @@
 ## Instructions:</br></br>
-Add this folder (`Software`) to the directory `/home/pi` of your Raspberry Pi 3.</br>
+First connect your Raspberry Pi to the internet. Then add this folder (`Software`) to the directory `/home/pi` of your Raspberry Pi 3.</br>
 From the `Software` directory, run the following commands:
 ```
 chmod +x setup.sh

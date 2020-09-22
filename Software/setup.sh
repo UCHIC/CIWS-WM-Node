@@ -117,6 +117,14 @@ else
 	echo "Directory for data files found"
 fi
 
+if [ ! -d "/home/pi/Software/savedData" ]
+then
+	echo "Creating directory for saved data files"
+	mkdir /home/pi/Software/savedData
+else
+	echo "Directory for saved data files found"
+fi
+
 if [ ! -d "/home/pi/Software/config" ]
 then
 	echo "Creating directory for configuration data"

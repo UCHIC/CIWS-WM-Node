@@ -24,9 +24,9 @@ filename= "/home/pi/Software/data/site" + Logger.getSiteNumber().zfill(4) + "_20
 
 try:
 	if os.path.exists(filename) == False:
-		Logger.writeToFile(dataTuple, filename)
+		pass #Logger.writeToFile(dataTuple, filename)
 except:
-	Logger.writeToFile(dataTuple, filename)
+	pass #Logger.writeToFile(dataTuple, filename)
 
 # Determine what data to transmit
 
@@ -34,6 +34,10 @@ try:
 	transmission = Logger.getTransmission()
 except:
 	transmission = '3' # If reading the settings file fails, default to transmitting both raw and disaggregated data
+try:
+	storage = Logger.getStorage()
+except:
+	storage = '3' # If reading the setting file fails, default to storing both raw and disaggregated data
 
 # Process the contents of dataTuple here. The format is as follows:
 # Index		 dataTuple
@@ -51,7 +55,7 @@ except:
 # 10		 Data Byte
 # ...		 ...
 
-SendData.processData(transmission)
+SendData.processData(transmission, storage)
 
 # CALL DISAGGREGATION CODE HERE
 
@@ -64,5 +68,4 @@ SendData.processData(transmission)
 	# Transmit both data files
 
 if ((returnReport[3] == 0) or (dataTuple[0] >= Logger.bufferMax())):	# This means that the Pi was turned on at midnight. This is likely by the microcontroller, so it should turn itself off.
-	Logger.setPowerOff()							# Tell the AVR datalogger that the Raspberry Pi is shutting down.
 	os.system("sudo poweroff")						# Shut down the Raspberry Pi

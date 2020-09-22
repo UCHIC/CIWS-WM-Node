@@ -112,5 +112,5 @@ if ! shopt -oq posix; then
   fi
 fi
 
-cd Software
-sudo python LoggerShell_CLI.py
+cd Software3
+sudo python3 LoggerShell_CLI.py

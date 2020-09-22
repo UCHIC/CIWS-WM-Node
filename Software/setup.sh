@@ -7,11 +7,10 @@
 # This bash script builds and installs the Logger module for python 2.7.                                                                   #
 # The actions taken by this script are separated into five steps:                                                                          #
 #                                                                                                                                          #
-#   1)  Run raspi-config                                                                                                                   #
-#   2)  Install libraries                                                                                                                  #
-#   3)  Replace files                                                                                                                      #
-#   4)  Compile code                                                                                                                       #
-#   5)  Reboot                                                                                                                             #
+#   1)  Install libraries                                                                                                                  #
+#   2)  Replace files                                                                                                                      #
+#   3)  Compile code                                                                                                                       #
+#   4)  Reboot                                                                                                                             #
 #                                                                                                                                          #
 # Each step is documented further with important notes describing what the script is doing and why.                                        #
 #                                                                                                                                          #
@@ -30,24 +29,6 @@
 ############################################################################################################################################
 
 #################################################################
-###################### 1) Run raspi-config ######################
-#################################################################
-
-# NOTES:
-
-## This section is necessary because a WiFi connection is      ##
-## required to install python-dev and wiringpi packages in     ##
-## step 2). WiFi is also needed for HTTP posting at this point ##
-## in development; however, other options are being explored.  ##
-
-echo "The script raspi-config will now run."
-echo "Use this to set up your WiFi and keyboard layout."
-
-read -p "Press Enter to continue. "
-
-raspi-config
-
-#################################################################
 ###################### 2) Install libraries #####################
 #################################################################
 
@@ -59,10 +40,10 @@ raspi-config
 ## to the GPIO pins on the Raspberry Pi for the C programming  ##
 ## language.                                                   ##
 
-echo "Installing python-dev, python-smbus, and wiringpi..."
+echo "Installing python3-dev python3-smbus wiringpi python3-requests python3-pandas pyhton3-seaborn pyhton3-sklearn..."
 
 apt-get update
-apt-get install python-dev python-smbus wiringpi
+apt-get install python3-dev python3-smbus wiringpi python3-requests python3-pandas pyhton3-seaborn pyhton3-sklearn
 
 #################################################################
 ####################### 3) Replace files ########################
@@ -124,9 +105,9 @@ rm -f uuidcopy
 echo "Building Logger python module..."
 
 rm -f -r build
-rm -f /usr/local/lib/python2.7/dist-packages/Logger*
-python setup.py build
-python setup.py install
+rm -f /usr/local/lib/python3.7/dist-packages/Logger*
+python3 setup.py build
+python3 setup.py install
 
 if [ ! -d "/home/pi/Software/data" ]
 then

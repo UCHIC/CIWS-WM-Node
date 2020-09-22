@@ -45,4 +45,4 @@ loggerReport = Logger.reportSwap(report)
 # Print the received report
 
 for i in range(0,12):
-	print loggerReport[i], " ",
+	print(loggerReport[i], " ")

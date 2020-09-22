@@ -26,7 +26,7 @@ sudo systemctl stop systemd-timesyncd
 sudo systemctl disable systemd-timesyncd
 
 # Read EEPROM chip and store the data in a file
-sudo python /home/pi/Software/LoggerAutoRun.py &
+sudo python3 /home/pi/Software/LoggerAutoRun.py &
 
 
 

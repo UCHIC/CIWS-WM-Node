@@ -6,7 +6,7 @@ chmod +x setup.sh
 sudo ./setup.sh
 ```
 You can now use the `Logger` module in Python. Note that this was built with Python 3.7.</br></br>
-The following dependencies should be automagically installed by running `setup.sh` on the Raspberry Pi, assuming the Raspberry Pi is connected to the internet.
+The following dependencies should be automatically installed by running `setup.sh` on the Raspberry Pi, assuming the Raspberry Pi is connected to the internet.
 ```
 python3-dev
 python3-smbus

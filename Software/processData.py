@@ -1,5 +1,5 @@
 import requests, glob, os, shutil
-from processData import processData
+from crunchData import crunchData
 
 upload_url = ''
 upload_token_url = ''
@@ -19,7 +19,7 @@ def processData(toSend, toStore):
 	for filenames in files_grabbed:
 
 		if toSend is not '1' or toStore is not '1':
-			disagcsv = WEUD(filenames)
+			disagcsv = crunchData(filenames)
 			if toSend is not '1':
 				with open(disagcsv, 'rb') as data_file:
 					files = [('data_file[]', data_file), ]

@@ -1,9 +1,9 @@
 import requests, glob, os, shutil
-from WEUD import WEUD
+from processData import processData
 
-upload_url = 'http://ciwsdbssandbox.uwrl.usu.edu/data-api'
-upload_token_url = 'http://ciwsdbs.uwrl.usu.edu/auth'
-client_passcode = 'amVmZl90aGlua3NfaGUnc19jb29s'
+upload_url = ''
+upload_token_url = ''
+client_passcode = ''
 
 
 def processData(toSend, toStore):

@@ -15,9 +15,9 @@ filename= "/home/pi/Software3/data/site" + Logger.getSiteNumber().zfill(4) + "_2
 
 try:
 	if os.path.exists(filename) == False:
-		pass #Logger.writeToFile(dataTuple, filename)
+		Logger.writeToFile(dataTuple, filename)
 except:
-	pass #Logger.writeToFile(dataTuple, filename)
+	Logger.writeToFile(dataTuple, filename)
 
 # Determine what data to transmit
 

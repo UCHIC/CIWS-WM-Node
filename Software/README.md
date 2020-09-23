@@ -24,6 +24,8 @@ Most of the Software functionality of the WM-Node device is described in the fil
 - `LoggerReadRom.py`: Runs when a logging session finishes. Reads EEPROM.
 - `LoggerReportSwap.py`: Communicates data with the microcontroller.
 - `LoggerShell_CLI.py`: User interfaces for the datalogger.
+- `processData.py`: Functionality to run analysis on new data files and then store that and original data on disk or remote server
+- `crunchData.py`: Optional user created file to run analysis on data files
 - `MCP3425.py`: Reads battery level using an MCP3425 ADC.
 - `README.md`: This file.
 - `bashrc`: Configuration file for the Raspberry Pi.

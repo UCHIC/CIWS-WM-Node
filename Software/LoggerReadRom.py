@@ -30,7 +30,7 @@ try:
 except:
 	storage = '3'  # If reading the setting file fails, default to storing both raw and disaggregated data
 
-SendData.processData(transmission, storage)
+processData.processData(transmission, storage)
 
 # CALL DISAGGREGATION CODE HERE
 

@@ -19,18 +19,18 @@ def processData(toSend, toStore):
 	for filenames in files_grabbed:
 
 		if toSend is not '1' or toStore is not '1':
-			disagcsv = crunchData(filenames)
-			if toSend is not '1':
-				with open(disagcsv, 'rb') as data_file:
-					files = [('data_file[]', data_file), ]
-					upload_token = requests.post(upload_token_url,data={'token': client_passcode, 'filenames': disagcsv})
-					upload_response = requests.post(upload_url,headers={'Authorization': f'Bearer {upload_token.text}'},files=files)
-					print(upload_response.text)
+			for disagcsv in crunchData(filenames):
+				if toSend is not '1':
+					with open(disagcsv, 'rb') as data_file:
+						files = [('data_file[]', data_file), ]
+						upload_token = requests.post(upload_token_url,data={'token': client_passcode, 'filenames': disagcsv})
+						upload_response = requests.post(upload_url,headers={'Authorization': f'Bearer {upload_token.text}'},files=files)
+						print(upload_response.text)
 
-			if toStore is not '1':
-				shutil.move(cd + disagcsv, out + disagcsv)
-			else:
-				os.remove(cd + disagcsv)
+				if toStore is not '1':
+					shutil.move(cd + disagcsv, out + disagcsv)
+				else:
+					os.remove(cd + disagcsv)
 
 		if toSend is not '2':
 			with open(filenames, 'rb') as data_file:

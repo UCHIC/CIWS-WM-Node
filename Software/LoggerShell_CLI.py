@@ -30,10 +30,10 @@ while(exit == 0):											# Run LoggerShell until the exit flag is set
 
 	if(userInput == "internet-status"):
 		try:
-			requests.get('http://216.58.192.142', timeout=5)
-			print('Internet Status: Connected')
+			requests.get('https://engineering.usu.edu/cee/people/faculty/horsburgh-jeff', timeout=5)
+			print('> Internet Status: Connected')
 		except:
-			print('Internet Status: Not Connected')
+			print('> Internet Status: Not Connected')
 
 	elif(userInput == "start-logging"):									# User Option: Start a logging session
 		command[0] = "python3 LoggerReportSwap.py 255 255 255 255 255 255 255 255 255 255 255 255"		# Command to read report data

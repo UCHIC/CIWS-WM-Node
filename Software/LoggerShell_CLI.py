@@ -1,6 +1,7 @@
 import subprocess
 import os
 import Logger
+import requests
 from MCP3425 import getVoltage
 
 exit = 0
@@ -26,6 +27,13 @@ while(exit == 0):											# Run LoggerShell until the exit flag is set
 			print("> Battery voltage: ", getVoltage())								# Get the battery voltage and display it
 		except:
 			print("> Battery voltage: <ADC Error>")
+
+	if(userInput == "internet-status"):
+		try:
+			requests.get('http://216.58.192.142', timeout=5)
+			print('Internet Status: Connected')
+		except:
+			print('Internet Status: Not Connected')
 
 	elif(userInput == "start-logging"):									# User Option: Start a logging session
 		command[0] = "python3 LoggerReportSwap.py 255 255 255 255 255 255 255 255 255 255 255 255"		# Command to read report data
@@ -261,6 +269,7 @@ while(exit == 0):											# Run LoggerShell until the exit flag is set
 		print("> set-storage           // Change data storage setting")
 		print("> get-storage           // Read and display storage setting")
 		print("> get-battery-voltage   // Display battery voltage")
+		print("> internet-status       // Checks if node is connected to the internet")
 		print("> water-flow            // Display water flow data for the previous sample")
 
 	elif(userInput == "exit"):										# User Option: Exit LoggerShell

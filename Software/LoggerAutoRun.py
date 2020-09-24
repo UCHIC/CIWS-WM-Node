@@ -67,5 +67,5 @@ processData.processData(transmission, storage)
 # elif transmission == '3':
 	# Transmit both data files
 
-if ((returnReport[3] == 0) or (dataTuple[0] >= Logger.bufferMax())):	# This means that the Pi was turned on at midnight. This is likely by the microcontroller, so it should turn itself off.
+if ((returnReport[3] == 0 and returnReport[4] < 5) or (dataTuple[0] >= Logger.bufferMax())):	# This means that the Pi was turned on at midnight. This is likely by the microcontroller, so it should turn itself off.
 	os.system("sudo poweroff")						# Shut down the Raspberry Pi

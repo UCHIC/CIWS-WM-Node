@@ -1,2 +1,2 @@
 def crunchData(file):  # pass in file name to be processed
-  return file           # retun file name of processed data
+  return [file]           # retun file name of processed data

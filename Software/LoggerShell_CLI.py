@@ -91,7 +91,7 @@ while(exit == 0):											# Run LoggerShell until the exit flag is set
 		print(">", Date)												# Display date
 		print(">", Time)												# Display time
 
-	elif(userInput == "update-date-time"):									# User Option: Update the date and time information on the microcontroller
+	elif(userInput == "set-date-time"):									# User Option: Update the date and time information on the microcontroller
 		newMonth = input("> Month (mm): ")									# Prompt user to input the current month
 		newDay = input("> Day (dd): ")									# Prompt user to input the current day
 		newYear = input("> Year (yy): ")									# Prompt user to input the current year
@@ -114,7 +114,7 @@ while(exit == 0):											# Run LoggerShell until the exit flag is set
 		print(">", Date)
 		print(">", Time)
 
-	elif(userInput == "set-clock-period"):									# User Option: Set a clock period (the time interval between data records is controlled by a timer period in the RTC)
+	elif(userInput == "set-timer-resolution"):									# User Option: Set a clock period (the time interval between data records is controlled by a timer period in the RTC)
 		print("> WARNING: Changing the clock period during a logging session will corrupt timestamps.")		# Warn the user that this action should not be done during a logging session
 		newPeriod = input("> New Period (integer value between 1 and 254) or C to CANCEL: ")		# Prompt the user for a new period (or cancel)
 		if(newPeriod != "C"):											# If the user decided not to cancel
@@ -133,7 +133,7 @@ while(exit == 0):											# Run LoggerShell until the exit flag is set
 		else:													# Else
 			print("> Period unchanged")										# Notify the user that the period was not changed
 
-	elif(userInput == "get-clock-period"):									# User Option: Display the set clock period
+	elif(userInput == "get-timer-resolution"):									# User Option: Display the set clock period
 		command[0] = "python3 LoggerReportSwap.py 255 255 255 255 255 255 255 255 255 255 255 255"		# Command to read report data
 		process = subprocess.Popen(command[0], stdout=subprocess.PIPE, shell=True)				# Create a sub-process to run command[0]
 		(output, err) = process.communicate()									# Assign variables in which to store output
@@ -170,11 +170,11 @@ while(exit == 0):											# Run LoggerShell until the exit flag is set
 			site = "Error reading site"
 		print("> Datalogger Site:", site)									# Display the current site number
 
-	elif(userInput == "set-meter"):										# User Option: Set a new meter resolution for the device
+	elif(userInput == "set-meter-resolution"):										# User Option: Set a new meter resolution for the device
 		newMeterRez = input("> New Meter Resolution: ")							# Prompt the user for a new meter resolution
 		Logger.setMeterResolution(newMeterRez)									# Store the meter resolution in a file
 
-	elif(userInput == "get-meter"):										# User Option: Retrieve the current meter resolution for the device
+	elif(userInput == "get-meter-resolution"):										# User Option: Retrieve the current meter resolution for the device
 		try:
 			meterRez = Logger.getMeterResolution()									# Read the current meter resolution from a file
 		except:
@@ -233,7 +233,7 @@ while(exit == 0):											# Run LoggerShell until the exit flag is set
 		print("> Pulses in last period:", pulseCount)								# Display pulse count from previous period
 		print("> Estimated water flow:", waterFlow, "GPM")							# Display estimated water flow from previous period
 		print("> Total pulses counted:", totalCount)								# Display total pulse count from current logging session
-		print("> Total water flow:", totalWaterFlow, "Gal")							# Display estimated total water flow from current logging session
+		print("> Total water volume:", totalWaterFlow, "Gal")							# Display estimated total water flow from current logging session
 
 	elif(userInput == "help"):										# User Option: Display the help menu
 		command[0] = "-"
@@ -243,9 +243,9 @@ while(exit == 0):											# Run LoggerShell until the exit flag is set
 		print("> of commands:")
 		print(">")
 		print("> date-time             // Displays the current date/time")
-		print("> update-date-time      // Updates the current date/time")
-		print("> set-clock-period      // Sets the time interval between samples")
-		print("> get-clock-period      // Displays the time interval between samples")
+		print("> set-date-time         // Updates the current date/time")
+		print("> set-timer-resolution  // Sets the time interval between samples")
+		print("> get-timer-resolution  // Displays the time interval between samples")
 		print("> exit                  // Exit from LoggerShell")
 		print("> exit-poweroff         // Exit from LoggerShell and power off (Microcontroller will continue to log data)")
 		print("> start-logging         // Begin logging data")
@@ -254,8 +254,8 @@ while(exit == 0):											# Run LoggerShell until the exit flag is set
 		print("> get-id                // Read and display the datalogger ID number")
 		print("> set-site              // Set a new datalogger site number")
 		print("> get-site              // Read and display the datalogger site number")
-		print("> set-meter             // Set a meter resolution for the datalogger")
-		print("> get-meter             // Read and display the meter resolution for the datalogger")
+		print("> set-meter-resolution  // Set a meter resolution for the datalogger")
+		print("> get-meter-resolution  // Read and display the meter resolution for the datalogger")
 		print("> set-transmission      // Change data transmission setting")
 		print("> get-transmission      // Read and display transmission setting")
 		print("> set-storage           // Change data storage setting")

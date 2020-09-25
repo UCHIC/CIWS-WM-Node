@@ -1,6 +1,6 @@
 import Logger
 import os
-import SendData
+import processData
 
 # The following six lines of code MUST ABSOLUTELY appear in this order. DO NOT MOVE OR CHANGE THE FOLLOWING SIX LINES OF CODE.
 # Logger.initPins() Should never be called by the user. It should only be called when this script is automatically run.

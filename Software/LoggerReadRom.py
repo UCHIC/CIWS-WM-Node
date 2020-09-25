@@ -1,6 +1,6 @@
 import Logger
 import os
-import SendData
+import processData
 
 Logger.init()                   # Initialzie the Logger Python module.
 Logger.setRomBusy()             # Tell the AVR datalogger that the EEPROM chip is in use

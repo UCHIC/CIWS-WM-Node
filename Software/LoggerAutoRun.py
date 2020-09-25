@@ -24,9 +24,9 @@ filename= "/home/pi/Software/data/site" + Logger.getSiteNumber().zfill(4) + "_20
 
 try:
 	if os.path.exists(filename) == False:
-		pass #Logger.writeToFile(dataTuple, filename)
+		Logger.writeToFile(dataTuple, filename)
 except:
-	pass #Logger.writeToFile(dataTuple, filename)
+	Logger.writeToFile(dataTuple, filename)
 
 # Determine what data to transmit
 
@@ -55,7 +55,7 @@ except:
 # 10		 Data Byte
 # ...		 ...
 
-SendData.processData(transmission, storage)
+processData.processData(transmission, storage)
 
 # CALL DISAGGREGATION CODE HERE
 
@@ -67,5 +67,5 @@ SendData.processData(transmission, storage)
 # elif transmission == '3':
 	# Transmit both data files
 
-if ((returnReport[3] == 0) or (dataTuple[0] >= Logger.bufferMax())):	# This means that the Pi was turned on at midnight. This is likely by the microcontroller, so it should turn itself off.
+if ((returnReport[3] == 0 and returnReport[4] < 5) or (dataTuple[0] >= Logger.bufferMax())):	# This means that the Pi was turned on at midnight. This is likely by the microcontroller, so it should turn itself off.
 	os.system("sudo poweroff")						# Shut down the Raspberry Pi

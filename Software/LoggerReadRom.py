@@ -15,9 +15,9 @@ filename= "/home/pi/Software3/data/site" + Logger.getSiteNumber().zfill(4) + "_2
 
 try:
 	if os.path.exists(filename) == False:
-		pass #Logger.writeToFile(dataTuple, filename)
+		Logger.writeToFile(dataTuple, filename)
 except:
-	pass #Logger.writeToFile(dataTuple, filename)
+	Logger.writeToFile(dataTuple, filename)
 
 # Determine what data to transmit
 
@@ -30,7 +30,7 @@ try:
 except:
 	storage = '3'  # If reading the setting file fails, default to storing both raw and disaggregated data
 
-SendData.processData(transmission, storage)
+processData.processData(transmission, storage)
 
 # CALL DISAGGREGATION CODE HERE
 

@@ -534,12 +534,12 @@ static PyObject* getStorage(PyObject* self, PyObject* args)
 	dataStoreConfig = fopen("/home/pi/Software/config/dataStoreConfig.txt", "r");		// Open data storage config file
 	if(dataStoreConfig == NULL)								// Check file
 	{
-		return Py_BuildValue("i", 0);
+		return Py_BuildValue("i", 1);
 	}
 	int scan = fscanf(dataStoreConfig, "%s", dataStore);					// Read data storage setting
 	if(scan == 0)
 	{
-		return Py_BuildValue("i", 0);
+		return Py_BuildValue("i", 1);
 	}
 	fclose(dataStoreConfig);								// Close data storage config file
 

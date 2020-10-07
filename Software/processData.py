@@ -17,11 +17,7 @@ def processData(toSend, toStore):
 		files_grabbed.extend(glob.glob(files))
 	for filenames in files_grabbed:
 		if toSend in ['2','3'] or toStore is not '1':
-			try:
-				disaglist = crunchData(filenames)
-			except:
-				print('Failed to crunch data')
-			for disagcsv in disaglist:
+			for disagcsv in crunchData(filenames):
 				if toSend in ['2','3']:
 					send(disagcsv)
 				if toStore is not '1':

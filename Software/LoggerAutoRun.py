@@ -1,6 +1,7 @@
 import Logger
 import os
-import SendData
+import processData
+import replaceC
 
 # The following six lines of code MUST ABSOLUTELY appear in this order. DO NOT MOVE OR CHANGE THE FOLLOWING SIX LINES OF CODE.
 # Logger.initPins() Should never be called by the user. It should only be called when this script is automatically run.
@@ -24,9 +25,9 @@ filename= "/home/pi/Software/data/site" + Logger.getSiteNumber().zfill(4) + "_20
 
 try:
 	if os.path.exists(filename) == False:
-		Logger.writeToFile(dataTuple, filename)
+		replaceC.writeToFile(dataTuple, filename)
 except:
-	Logger.writeToFile(dataTuple, filename)
+	replaceC.writeToFile(dataTuple, filename)
 
 # Determine what data to transmit
 

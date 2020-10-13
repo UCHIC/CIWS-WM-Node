@@ -1,2 +1,6 @@
+import WEUDseven
 def crunchData(file):  # pass in file name to be processed
-  return [file]           # retun file name of processed data
+	try:
+		return [WEUDseven.WEUD(file)]           #Return list of file names for output data
+	except:
+		return []

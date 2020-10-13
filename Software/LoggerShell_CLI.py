@@ -274,7 +274,7 @@ while(exit == 0):											# Run LoggerShell until the exit flag is set
 
 	elif(userInput == "exit"):										# User Option: Exit LoggerShell
 		command[0] = "-"
-		print("> To restart LoggerShell, execute the following command: sudo python LoggerShell_CLI.py")		# Inform the user how to restart LoggerShell
+		print("> To restart LoggerShell, execute the following command: sudo python3 LoggerShell_CLI.py")		# Inform the user how to restart LoggerShell
 		exit = 1												# Set the exit flag to 1
 
 	elif(userInput == "exit-poweroff"):									# User Option: Exit LoggerShell and power down the Raspberry Pi (microcontroller continues to log data)

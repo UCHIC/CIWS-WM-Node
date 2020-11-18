@@ -13,7 +13,7 @@ def writeToFile(tup, file):
 	timerResolution = Logger.getPeriod()
 	for index, data in enumerate(tup[7:]):
 		date = date + datetime.timedelta(0,int(timerResolution))
-		f.write(date.strftime("%y-%m-%d %H:%M:%S"))
+		f.write(date.strftime("%Y-%m-%d %H:%M:%S"))
 		f.write(',')
 		f.write(str(index+1))
 		f.write(',')

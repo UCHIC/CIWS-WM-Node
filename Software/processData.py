@@ -21,6 +21,7 @@ def processData(toSend, toStore):
 				if toSend in ['2','3']:                            #do send settings allow disaggregated data to be sent
 					send(disagcsv)
 				if toStore is not '1':                             #do save settings allow disaggregated data to be saved
+
 					shutil.move(cd + disagcsv, out + disagcsv)
 				else:                                              #if disaggregated data isnt supposed to be saved then remove it
 					os.remove(cd + disagcsv)

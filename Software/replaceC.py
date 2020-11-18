@@ -2,6 +2,7 @@ import Logger
 import datetime
 import ast
 
+
 def writeToFile(tup, file):
 	f = open(file,'w+')
 	f.write('Site #: '+str(Logger.getSiteNumber())+'\n')

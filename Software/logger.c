@@ -93,7 +93,7 @@ static PyObject* loadData(PyObject* self, PyObject* args)
 	data[2] = 0x00;						//                      Address (Mid):  0
 	data[3] = 0x00;						//                      Address (Low):  0
 	wiringPiSPIDataRW(0, data, dataSize);			// SPI Transaction: The contents of data are overwritten by the EEPROM response
-	unsigned char recordNum = (data[4] << 16) + (data[5] << 8) + data[6];	// Calculate number of records stored
+	unsigned int recordNum = (data[4] << 16) + (data[5] << 8) + data[6];	// Calculate number of records stored
 	if(recordNum > BUFFER_MAX)
 	{
 		recordNum = BUFFER_MAX;

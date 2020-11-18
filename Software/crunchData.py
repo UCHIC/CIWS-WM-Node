@@ -1,6 +1,5 @@
-
 def crunchData(file):  # pass in file name to be processed
 	try:
-		return []           # retun file name of processed data
+		return []           #Return list of file names for output data
 	except:
 		return []

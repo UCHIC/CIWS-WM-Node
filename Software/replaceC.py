@@ -1,5 +1,8 @@
 import Logger
 import datetime
+import ast
+
+
 def writeToFile(tup, file):
 	f = open(file,'w+')
 	f.write('Site #: '+str(Logger.getSiteNumber())+'\n')
@@ -16,3 +19,24 @@ def writeToFile(tup, file):
 		f.write(',')
 		f.write(str(data))
 		f.write('\n')
+
+def writeConfig(key, value):
+	f = open('configure.txt','r+')
+	dict = ast.literal_eval(f.read())
+	f.close()
+	dict[key] = value
+	f = open('configure.txt', 'w')
+	f.write(dict)
+	f.close
+	return readConfig(key)
+
+def readConfig(key):
+	try:
+		f = open('configure.txt', 'r+')
+		dict = ast.literal_eval(f.read())
+		f.close()
+		return dict[key]
+	except:
+		return "Error Reading " + key
+		f.close()
+		return dict[key]

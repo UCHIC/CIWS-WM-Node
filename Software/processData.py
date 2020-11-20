@@ -18,13 +18,13 @@ def processData(toSend, toStore):
 	for filenames in files_grabbed:                                            #for all files grabbed
 		if toSend in ['2','3'] or toStore is not '1':                      #if disaggregated data will be sent or saved disaggregate data
 			for disagcsv in crunchData(filenames):                     #for each file name returned from crunchdata(crunch data returns file names for however many analysis methods it contains)
-				if toSend in ['2','3']:                            #do send settings allow disaggregated data to be sent
-					send(disagcsv)
-				if toStore is not '1':                             #do save settings allow disaggregated data to be saved
-
-					shutil.move(cd + disagcsv, out + disagcsv)
-				else:                                              #if disaggregated data isnt supposed to be saved then remove it
-					os.remove(cd + disagcsv)
+				if disagcsv:
+					if toSend in ['2','3']:                            #do send settings allow disaggregated data to be sent
+						send(disagcsv)
+					if toStore is not '1':                             #do save settings allow disaggregated data to be saved
+						shutil.move(cd + disagcsv, out + disagcsv)
+					else:                                              #if disaggregated data isnt supposed to be saved then remove it
+						os.remove(cd + disagcsv)
 		if toSend in ['1','3']:                                            #do send settings allow raw data to be sent
 			send(filenames)
 		if toStore is not '2':                                             #do save settings allow raw data to be saved

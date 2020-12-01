@@ -22,7 +22,7 @@ Most of the Software functionality of the WM-Node device is described in the fil
 ### Files:
 - `LoggerAutoRun.py`: Runs on every power up.
 - `LoggerShell_CLI.py`: User interfaces for the datalogger.
-- `piHandler.py`: Handles functions primarily used by pi.
+- `piHandler.py`: Handles the functions primarily used by the pi.
 - `arduinoHandler.py`: Handles functions used to commmunicate with arduino.
 - `README.md`: This file.
 - `bashrc`: Configuration file for the Raspberry Pi.

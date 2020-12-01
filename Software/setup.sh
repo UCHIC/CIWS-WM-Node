@@ -125,34 +125,6 @@ else
 	echo "Directory for saved data files found"
 fi
 
-if [ ! -d "/home/pi/Software/config" ]
-then
-	echo "Creating directory for configuration data"
-	mkdir /home/pi/Software/config
-else
-	echo "Directory for configuration data found"
-fi
-
-if [[ ! -f "/home/pi/Software/config/clockPeriod.txt" ]]
-then
-	echo "4" > /home/pi/Software/config/clockPeriod.txt
-fi
-
-if [[ ! -f "/home/pi/Software/config/IDconfig.txt" ]]
-then
-	echo "1" > /home/pi/Software/config/IDconfig.txt
-fi
-
-if [[ ! -f "/home/pi/Software/config/meterConfig.txt" ]]
-then
-	echo "0.033" > /home/pi/Software/config/meterConfig.txt
-fi
-
-if [[ ! -f "/home/pi/Software/config/siteConfig.txt" ]]
-then
-	echo "1" > /home/pi/Software/config/siteConfig.txt
-fi
-
 #################################################################
 ########################### 5) Reboot ###########################
 #################################################################

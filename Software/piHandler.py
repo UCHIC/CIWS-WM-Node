@@ -64,8 +64,8 @@ def readConfig(key):
 		dict = ast.literal_eval(f.read())
 		f.close()
 		return dict[key]
-	except:
 		f.close()
+	except:
 		return "Error Reading " + key
 
 

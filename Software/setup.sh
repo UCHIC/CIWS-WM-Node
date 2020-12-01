@@ -125,9 +125,9 @@ else
 	echo "Directory for saved data files found"
 fi
 
-if [[ ! -f "/home/pi/Software/config/configure.txt" ]]
+if [[ ! -f "/home/pi/Software/configure.txt" ]]
 then
-	echo "{'ID': '', 'Site': '', 'Period': '', 'meterResolution': '', 'Transmission': '', 'Storage': ''}" > /home/pi/Software/config/configure.txt
+	echo "{'ID': '', 'Site': '', 'Period': '', 'meterResolution': '', 'Transmission': '', 'Storage': ''}" > /home/pi/Software/configure.txt
 fi
 #################################################################
 ########################### 5) Reboot ###########################

@@ -127,7 +127,7 @@ fi
 
 if [[ ! -f "/home/pi/Software/configure.txt" ]]
 then
-	echo "{'ID': '', 'Site': '', 'Period': '', 'meterResolution': '', 'Transmission': '', 'Storage': ''}" > /home/pi/Software/configure.txt
+	echo "{'ID': '000', 'Site': '000', 'Period': '004', 'meterResolution': '.033', 'Transmission': '3', 'Storage': '3'}" > /home/pi/Software/configure.txt
 fi
 #################################################################
 ########################### 5) Reboot ###########################

@@ -1,13 +1,25 @@
-import Logger
 import os
 import piHandler
 import arduinoHandler
+import Logger
 
-arduinoHandler.writeEEPROMToFile()
+try:
+	Logger.setPowerGood()
+	data = arduinoHandler.getArduinoReport()
 
-data = arduinoHandler.getArduinoReport()
+	print(str(data))
 
-piHandler.writeConfig('Period', int(data[11])) # Store the period found in the returned report (allows timestamps to be calculated in Logger.writeToFile())
+	piHandler.writeConfig('Period', int(data['period'])) # Store the period found in the returned report (allows timestamps to be calculated in Logger.writeToFile())
+
+	print('After Pi Handler')
+
+	numRecords = 0
+
+	if data['isLogging']:
+		arduinoHandler.stopLogging()
+		numRecords = arduinoHandler.writeEEPROMToFile(True)
+		arduinoHandler.startLogging()
+
 
 
 # Process the contents of dataTuple here. The format is as follows:
@@ -26,7 +38,9 @@ piHandler.writeConfig('Period', int(data[11])) # Store the period found in the r
 # 10		 Data Byte
 # ...		 ...
 
-piHandler.processData()
-
-if ((data[3] == 0 and data[4] < 5) or (data[0] >= Logger.bufferMax())):	# This means that the Pi was turned on at midnight. This is likely by the microcontroller, so it should turn itself off.
-	os.system("sudo poweroff")						# Shut down the Raspberry Pi
+	piHandler.processData()
+	print('after process')
+	if ((data['hour'] == 0 and data['minute'] < 5) or (numRecords >= arduinoHandler.bufferMax())):	# This means that the Pi was turned on at midnight. This is likely by the microcontroller, so it should turn itself off.
+		os.system("sudo poweroff")						# Shut down the Raspberry Pi
+except Exception as e:
+	print(str(e))

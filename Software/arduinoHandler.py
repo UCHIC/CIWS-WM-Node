@@ -3,31 +3,36 @@ import datetime
 import piHandler
 
 
-def writeEEPROMToFile(): #FINISHED AND DEPLOYED
-	Logger.init()  # Initialzie the Logger Python module.
+def writeEEPROMToFile(firstBoot=False):
+
+	Logger.init()  # Initialize the Logger Python module.
+	if firstBoot:
+		Logger.initPins()
 	Logger.setRomBusy()  # Tell the AVR datalogger that the EEPROM chip is in use
 	Logger.setPowerGood()  # Tell the AVR datalogger that the Raspberry Pi is powered on
 	tup = Logger.loadData()  # Read the data from the EEPROM chip
 	Logger.setRomFree()  # Tell the AVR datalogger that the EEPROM chip is no longer in use.
-
+	print(tup)
 	# Write data to file
-	file = "/home/pi/Software/data/site" + str(piHandler.readConfig('Site')).zfill(4) + "_20" + '-' + str(tup[1]).zfill(2) + str(tup[2]).zfill(2) + str(tup[3]).zfill(2) + 'T' + str(tup[4]).zfill(2) + str(tup[5]).zfill(2) + str(tup[6]).zfill(2) + ".csv"
+	file = "/home/pi/Software/data/site" + str(piHandler.readConfig('Site')).zfill(4) + "_20" + str(tup[1]).zfill(2) + str(tup[2]).zfill(2) + str(tup[3]).zfill(2) + 'T' + str(tup[4]).zfill(2) + str(tup[5]).zfill(2) + str(tup[6]).zfill(2) + ".csv"
 	f = open(file,'w+')
 	f.write('Site #: ' + str(piHandler.readConfig('Site')) + '\n')
 	f.write('Datalogger ID #: ' + str(piHandler.readConfig('ID')) + '\n')
 	f.write('Meter Resolution: ' + str(piHandler.readConfig('meterResolution')) + '\n')
 	f.write('Time,Record,Pulses\n')
+	print((tup[1], tup[2], tup[3], tup[4], tup[5], tup[6]))
 	date = datetime.datetime(tup[1], tup[2], tup[3], tup[4], tup[5], tup[6])
 	timerResolution = piHandler.readConfig('Period')
 	for index, data in enumerate(tup[7:]):
 		date = date + datetime.timedelta(0,int(timerResolution))
-		f.write(date.strftime("%y-%m-%d %H:%M:%S"))
+		f.write(date.strftime("%Y-%m-%d %H:%M:%S"))
 		f.write(',')
 		f.write(str(index+1))
 		f.write(',')
 		f.write(str(data))
 		f.write('\n')
 	f.close()
+	return tup[0]  # returns number of records
 
 def getArduinoReport():
 	data = [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255]
@@ -54,3 +59,6 @@ def setTimerResolution(resolution):
 	data = [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, resolution]
 	Logger.init()
 	Logger.reportSwap(data)
+
+def bufferMax():
+	return Logger.bufferMax()

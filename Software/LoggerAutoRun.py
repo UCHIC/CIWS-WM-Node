@@ -1,10 +1,8 @@
 import os
 import piHandler
 import arduinoHandler
-import Logger
 
 try:
-	Logger.setPowerGood()
 	data = arduinoHandler.getArduinoReport()
 
 	print(str(data))

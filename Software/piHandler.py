@@ -1,20 +1,21 @@
-import ast
+import requests, glob, os, shutil, ast
 
-import requests, glob, os, shutil, arduinoHandler
+import WEUDseven
 
-
-upload_url = ''
-upload_token_url = ''
-client_passcode = ''
+upload_url = 'http://ciwsdbssandbox.uwrl.usu.edu/data-api'
+upload_token_url = 'http://ciwsdbs.uwrl.usu.edu/auth'
+client_passcode = 'amVmZl90aGlua3NfaGUnc19jb29s'
 
 
 def processData():
 	files_grabbed = glob.glob('/home/pi/Software/data/*.csv')
 	toSend = readConfig('Transmission')
 	toStore = readConfig('Storage')
+	print('files grabber:', files_grabbed)
 	for filenames in files_grabbed:
 		if toSend in ['2','3'] or toStore is not '1':
 			for disagcsv in dataAnalysis(filenames):
+				print(disagcsv)
 				if disagcsv:
 					if toSend in ['2','3']:
 						send(disagcsv.split('/')[-1])
@@ -64,13 +65,14 @@ def readConfig(key):
 		dict = ast.literal_eval(f.read())
 		f.close()
 		return dict[key]
-		f.close()
 	except:
+		f.close()
 		return "Error Reading " + key
 
 
 def dataAnalysis(file):  # pass in file name to be processed
 	try:
-		return []           #Return list of file names for output data
-	except:
+		return [WEUDseven.WEUD(file)]           #Return list of file names for output data
+	except Exception as e:
+		print(str(e))
 		return []

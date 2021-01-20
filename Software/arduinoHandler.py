@@ -3,13 +3,15 @@ import datetime
 import piHandler
 
 
-def writeEEPROMToFile(firstBoot=False):
-
+def initialize(firstBoot=False):
 	Logger.init()  # Initialize the Logger Python module.
 	if firstBoot:
 		Logger.initPins()
-	Logger.setRomBusy()  # Tell the AVR datalogger that the EEPROM chip is in use
 	Logger.setPowerGood()  # Tell the AVR datalogger that the Raspberry Pi is powered on
+
+def writeEEPROMToFile():
+	Logger.setRomBusy()  # Tell the AVR datalogger that the EEPROM chip is in use
+	Logger.init()
 	tup = Logger.loadData()  # Read the data from the EEPROM chip
 	Logger.setRomFree()  # Tell the AVR datalogger that the EEPROM chip is no longer in use.
 	print(tup)

@@ -83,10 +83,10 @@ then
 	mv /home/pi/.bashrc /home/pi/.bashrc.original
 fi
 
-cp setup/cmdline.txt /boot
-cp setup/config.txt /boot
-cp setup/rc.local /etc
-cp setup/bashrc /home/pi/.bashrc
+cp cmdline.txt /boot
+cp config.txt /boot
+cp rc.local /etc
+cp bashrc /home/pi/.bashrc
 
 gcc uuidcopy.c -o uuidcopy
 ./uuidcopy
@@ -125,10 +125,6 @@ else
 	echo "Directory for saved data files found"
 fi
 
-if [[ ! -f "/home/pi/Software/configure.txt" ]]
-then
-	echo "{'ID': '000', 'Site': '000', 'Period': '004', 'meterResolution': '.033', 'Transmission': '3', 'Storage': '3'}" > /home/pi/Software/configure.txt
-fi
 #################################################################
 ########################### 5) Reboot ###########################
 #################################################################

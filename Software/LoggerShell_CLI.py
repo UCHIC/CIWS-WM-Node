@@ -42,8 +42,7 @@ while(True):											# Run LoggerShell until the exit flag is set
 			print('> Internet Status: Not Connected')
 
 	elif(userInput == "start-logging"):									# User Option: Start a logging session										# Extract the output
-		temp = arduinoHandler.getArduinoReport()
-		if temp['isLogging']:										# If the logging field is 1
+		if arduinoHandler.getArduinoReport()['isLogging']:										# If the logging field is 1
 			print("> Device already logging")									# Notify the user that the device is already logging
 		else:													# Else
 			print("> Setting start bit...")										# Notify the user that a logging session is being started

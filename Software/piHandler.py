@@ -1,10 +1,8 @@
 import requests, glob, os, shutil, ast
 
-import WEUDseven
-
-upload_url = 'http://ciwsdbssandbox.uwrl.usu.edu/data-api'
-upload_token_url = 'http://ciwsdbs.uwrl.usu.edu/auth'
-client_passcode = 'amVmZl90aGlua3NfaGUnc19jb29s'
+upload_url = ''
+upload_token_url = ''
+client_passcode = ''
 
 
 def processData():
@@ -72,7 +70,7 @@ def readConfig(key):
 
 def dataAnalysis(file):  # pass in file name to be processed
 	try:
-		return [WEUDseven.WEUD(file)]           #Return list of file names for output data
+		return []           #Return list of file names for output data
 	except Exception as e:
 		print(str(e))
 		return []

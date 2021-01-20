@@ -98,9 +98,11 @@ volatile char reportIndex = 0;                // current index of the above repo
 bool countDown = false;                       // Tells program to count every four seconds until it's time to power off the host computer.
 char powerOff_Count = 0;                      // Stores the count as described above.
 byte current_day = 0;
+unsigned long keepup = 0;
 
 void setup()
 {
+  Serial.begin(9600);
   DDRB |= 0x01;                                   // Pin B0 (Digital pin 8) set as output (the rest of GPIO B is taken care of by SPI initialization)
   PORTB |= 0x01;                                  // Set enable pin to host computer bus buffer high (active low, keeps host computer disconnected until powered on).
 
@@ -158,6 +160,7 @@ void loop()
     State.romFree = false;                                                            // Let the rest of the program know that the EEPROM chip is not accessible
     writeDataSize(&State);                                                            // Store the number of data bytes in the first three bytes of the EEPROM chip for the host computer
     powerRPiON();                                                                     // Power on the host computer
+    keepup = millis();
   }
 
   if(State.RPiON)                     /** Execute the following code IF the host computer is on **/
@@ -192,11 +195,11 @@ void loop()
         }
       }
     }
-/*
-    if(((PINC & 0x01) == 0x01) && State.romFree)
-      State.romFree = false;
-*/
-    if(((PINC & 0x01) == 0x00) && !State.romFree && State.powerGood)  // If the EEPROM Busy signal from the host computer goes low when the host computer has been detected as ON and reading the EEPROM
+
+//    if(((PINC & 0x01) == 0x01) && State.romFree)
+//      State.romFree = false;
+
+    if(((PINC & 0x01) == 0x00) && !State.romFree && State.powerGood && ((millis() - keepup) > 17000))  // If the EEPROM Busy signal from the host computer goes low when the host computer has been detected as ON and reading the EEPROM
     {
       State.romFree = true;                                             // Let the rest of the program know that the EEPROM is accessible
       PORTB |= 0x01;                                                    // Set the host computer's SPI bus enable line high (active low, so the host computer is disconnected).

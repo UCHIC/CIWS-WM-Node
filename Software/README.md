@@ -20,13 +20,10 @@ pyhton3-sklearn
 Most of the Software functionality of the WM-Node device is described in the file `logger.c`. The C code is compiled as a Python module by the script `setup.sh`, and is used in the Python scripts in this directory.
 
 ### Files:
-- `LoggerAutoRun.py`: Runs on every power up. Reads EEPROM.
-- `LoggerReadRom.py`: Runs when a logging session finishes. Reads EEPROM.
-- `LoggerReportSwap.py`: Communicates data with the microcontroller.
+- `LoggerAutoRun.py`: Runs on every power up.
 - `LoggerShell_CLI.py`: User interfaces for the datalogger.
-- `processData.py`: Functionality to run analysis on new data files and then store that and original data on disk or remote server.
-- `crunchData.py`: Optional user created file to run analysis on data files.
-- `MCP3425.py`: Reads battery level using an MCP3425 ADC.
+- `piHandler.py`: Handles the functions primarily used by the pi.
+- `arduinoHandler.py`: Handles functions used to commmunicate with arduino.
 - `README.md`: This file.
 - `bashrc`: Configuration file for the Raspberry Pi.
 - `cmdline.txt`: Configuration file for the Raspberry Pi.

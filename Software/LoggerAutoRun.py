@@ -3,8 +3,8 @@ import piHandler
 import arduinoHandler
 
 try:
-	arduinoHandler.initialize(True)
-	data = arduinoHandler.getArduinoReport()
+	arduinoHandler.initialize(True)  # Initialize init pins
+	data = arduinoHandler.getArduinoReport() # Fetch report from arduino
 
 	print(str(data))
 
@@ -12,10 +12,10 @@ try:
 
 	print('After Pi Handler')
 
-	numRecords = 0
+	numRecords = 0  # Holds record num if logger isnt loggging
 
 	if data['isLogging']:
-		numRecords = arduinoHandler.writeEEPROMToFile()
+		numRecords = arduinoHandler.writeEEPROMToFile()  # Fetch data from EEPROM(function returns number of records)
 
 
 # Process the contents of dataTuple here. The format is as follows:
@@ -34,7 +34,7 @@ try:
 # 10		 Data Byte
 # ...		 ...
 
-	piHandler.processData()
+	piHandler.processData()  # Processes data in data directory, disagregated, sends to server, and stores data
 	print('after process')
 	if ((data['hour'] == 0 and data['minute'] < 2) or (numRecords >= arduinoHandler.bufferMax())):	# This means that the Pi was turned on at midnight. This is likely by the microcontroller, so it should turn itself off.
 		os.system("sudo poweroff")						# Shut down the Raspberry Pi

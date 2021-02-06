@@ -5,22 +5,25 @@ upload_token_url = ''
 client_passcode = ''
 
 
+# This function reads files from the data directory and processes them.
+# This includes dissagregation/analysis, transmission to remote server, and storage of data on the device.
+
 def processData():
-	files_grabbed = glob.glob('/home/pi/Software/data/*.csv')
-	toSend = readConfig('Transmission')
-	toStore = readConfig('Storage')
+	files_grabbed = glob.glob('/home/pi/Software/data/*.csv')  # Grab files from data directory
+	toSend = readConfig('Transmission')  # Read transmission setting((3)send all data/(2)just disaggregated data/(1)just raw data)
+	toStore = readConfig('Storage')  # Read Storage setting((3)store all data/(2)just disaggregated data/(1)just raw data)
 	print('files grabber:', files_grabbed)
-	for filenames in files_grabbed:
-		if toSend in ['2','3'] or toStore is not '1':
-			for disagcsv in dataAnalysis(filenames):
+	for filenames in files_grabbed:  # For each file in the data directory
+		if toSend in ['2','3'] or toStore is not '1': # Check if dissagregated data will be trasmitted or stored(If not then no reason to disaggregated)
+			for disagcsv in dataAnalysis(filenames):  # For each file returned by data analysis
 				print(disagcsv)
-				if disagcsv:
-					if toSend in ['2','3']:
-						send(disagcsv.split('/')[-1])
-					if toStore is not '1':
-						shutil.move(disagcsv, '/home/pi/Software/savedData/' + disagcsv.split('/')[-1])
+				if disagcsv:  # If file exists
+					if toSend in ['2','3']:  # If file is supposed to be sent to server
+						send(disagcsv.split('/')[-1])  # Send to server
+					if toStore is not '1':  # If file is supposed to be saved on device
+						shutil.move(disagcsv, '/home/pi/Software/savedData/' + disagcsv.split('/')[-1])  # Save on device
 					else:
-						os.remove(disagcsv)
+						os.remove(disagcsv)  # If file is not supposed to be saved then delete it
 		if toSend in ['1','3']:
 			send(filenames.split('/')[-1])
 		if toStore is not '2':

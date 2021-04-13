@@ -195,7 +195,7 @@ void spiInit(void)
 void spiOff(void)
 {
   spiPowerUp(); // Enable clock and power to SPI module
-  DDRB = 0x01;  // Set SPI pins to inputs, leave Host Computer SPI bus enable (buffer chip) output
+  DDRB = 0x05;  // Set SPI pins to inputs, leave Host Computer SPI bus enable (buffer chip) output
   spiPowerDown();
 
   return;

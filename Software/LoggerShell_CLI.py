@@ -34,7 +34,7 @@ while(True):											# Run LoggerShell until the exit flag is set
 		except:
 			print("> Battery voltage: <ADC Error>")
 
-	if(userInput == "internet-status"):
+	elif(userInput == "internet-status"):
 		try:
 			requests.get('https://engineering.usu.edu/cee/people/faculty/horsburgh-jeff', timeout=5)
 			print('> Internet Status: Connected')

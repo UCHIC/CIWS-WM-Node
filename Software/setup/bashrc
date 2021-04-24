@@ -112,5 +112,5 @@ if ! shopt -oq posix; then
   fi
 fi
 
-cd Software
+cd CIWS-WM-Node/Software
 sudo python3 LoggerShell_CLI.py

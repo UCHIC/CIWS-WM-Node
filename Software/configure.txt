@@ -1,0 +1,1 @@
+{'ID': '', 'Site': '', 'Period': '', 'meterResolution': '', 'Transmission': '1', 'Storage': '1'}

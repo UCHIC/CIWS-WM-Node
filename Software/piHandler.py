@@ -50,7 +50,7 @@ def writeConfig(key, value):
 	try:
 		dict = ast.literal_eval(f.read())
 	except:
-		dict = {'ID': '', 'Site': '', 'Period': '', 'meterResolution': '', 'Transmission': '', 'Storage': ''}
+		dict = {'ID': '', 'Site': '', 'Period': '', 'meterResolution': '', 'Transmission': '1', 'Storage': '1'}
 	finally:
 		f.close()
 	dict[key] = value

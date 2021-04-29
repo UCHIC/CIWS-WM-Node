@@ -220,7 +220,7 @@ L Device:C_Small C4
 U 1 1 5DCAF958
 P 3525 2575
 F 0 "C4" H 3617 2621 50  0000 L CNN
-F 1 "1uF" H 3617 2530 50  0000 L CNN
+F 1 "100uF" H 3617 2530 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 3525 2575 50  0001 C CNN
 F 3 "~" H 3525 2575 50  0001 C CNN
 	1    3525 2575
@@ -747,17 +747,6 @@ $EndComp
 Connection ~ 4675 3525
 Wire Wire Line
 	2175 2275 2175 2425
-$Comp
-L power:+3.3V #PWR01
-U 1 1 5DD2E44B
-P 8800 1200
-F 0 "#PWR01" H 8800 1050 50  0001 C CNN
-F 1 "+3.3V" H 8815 1373 50  0000 C CNN
-F 2 "" H 8800 1200 50  0001 C CNN
-F 3 "" H 8800 1200 50  0001 C CNN
-	1    8800 1200
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	8625 6725 9275 6725
 Wire Wire Line
@@ -1197,8 +1186,6 @@ F 3 "" H 8800 1900 50  0001 C CNN
 	1    8800 1900
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	8800 1200 8800 1225
 Connection ~ 8800 1225
 Wire Wire Line
 	7925 3475 7925 2525
@@ -1916,4 +1903,24 @@ Wire Wire Line
 Wire Wire Line
 	13175 1925 14025 1925
 Connection ~ 13175 3700
+Wire Wire Line
+	8800 810  11725 810 
+Wire Wire Line
+	8800 810  8800 1225
+Wire Wire Line
+	11725 810  11725 1575
+$Comp
+L Jumper:Jumper_2_Bridged JP?
+U 1 1 60992B5E
+P 8455 810
+F 0 "JP?" H 8455 1005 50  0000 C CNN
+F 1 "Jumper_2_Bridged" H 8455 914 50  0000 C CNN
+F 2 "" H 8455 810 50  0001 C CNN
+F 3 "~" H 8455 810 50  0001 C CNN
+	1    8455 810 
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8800 810  8655 810 
+Connection ~ 8800 810 
 $EndSCHEMATC

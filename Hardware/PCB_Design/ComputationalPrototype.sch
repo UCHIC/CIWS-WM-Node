@@ -220,7 +220,7 @@ L Device:C_Small C4
 U 1 1 5DCAF958
 P 3525 2575
 F 0 "C4" H 3617 2621 50  0000 L CNN
-F 1 "1uF" H 3617 2530 50  0000 L CNN
+F 1 "100uF" H 3617 2530 50  0000 L CNN
 F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 3525 2575 50  0001 C CNN
 F 3 "~" H 3525 2575 50  0001 C CNN
 	1    3525 2575
@@ -231,7 +231,7 @@ L Regulator_Linear:MCP1703A-3302_SOT23 U1
 U 1 1 5DCAF9D3
 P 2875 2425
 F 0 "U1" H 2875 2667 50  0000 C CNN
-F 1 "MCP1703A-3302_SOT23" H 2875 2576 50  0000 C CNN
+F 1 "MCP1703AT-3302E/CB" H 2875 2576 50  0000 C CNN
 F 2 "Package_TO_SOT_SMD:SOT-23_Handsoldering" H 2875 2625 50  0001 C CNN
 F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/20005122B.pdf" H 2875 2375 50  0001 C CNN
 	1    2875 2425
@@ -391,31 +391,13 @@ F 3 "" H 8925 3675 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	8975 3425 8925 3425
-Wire Wire Line
-	8925 3425 8925 3675
-Wire Wire Line
-	8975 3525 8725 3525
-Wire Wire Line
-	8725 3525 8725 2825
-Wire Wire Line
-	8975 3325 8175 3325
-Wire Wire Line
 	8175 3325 8175 4425
-Wire Wire Line
-	8975 3225 8275 3225
-Wire Wire Line
-	8275 3225 8275 4525
 Wire Wire Line
 	8275 4525 7625 4525
 Wire Wire Line
 	6425 4625 6625 4625
 Wire Wire Line
 	6425 5325 7825 5325
-Wire Wire Line
-	8975 3125 8375 3125
-Wire Wire Line
-	8375 3125 8375 4925
 Wire Wire Line
 	8375 4925 7725 4925
 Wire Wire Line
@@ -747,17 +729,6 @@ $EndComp
 Connection ~ 4675 3525
 Wire Wire Line
 	2175 2275 2175 2425
-$Comp
-L power:+3.3V #PWR01
-U 1 1 5DD2E44B
-P 8800 1200
-F 0 "#PWR01" H 8800 1050 50  0001 C CNN
-F 1 "+3.3V" H 8815 1373 50  0000 C CNN
-F 2 "" H 8800 1200 50  0001 C CNN
-F 3 "" H 8800 1200 50  0001 C CNN
-	1    8800 1200
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	8625 6725 9275 6725
 Wire Wire Line
@@ -1197,8 +1168,6 @@ F 3 "" H 8800 1900 50  0001 C CNN
 	1    8800 1900
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	8800 1200 8800 1225
 Connection ~ 8800 1225
 Wire Wire Line
 	7925 3475 7925 2525
@@ -1808,7 +1777,7 @@ U 1 1 5F3B8122
 P 13000 5125
 F 0 "R12" V 12795 5125 50  0000 C CNN
 F 1 "2k" V 12886 5125 50  0000 C CNN
-F 2 "R12" H 13000 5125 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 13085 5220 50  0001 C CNN
 F 3 "~" H 13000 5125 50  0001 C CNN
 	1    13000 5125
 	1    0    0    -1  
@@ -1916,4 +1885,55 @@ Wire Wire Line
 Wire Wire Line
 	13175 1925 14025 1925
 Connection ~ 13175 3700
+Wire Wire Line
+	8800 810  11725 810 
+Wire Wire Line
+	8800 810  8800 1225
+Wire Wire Line
+	11725 810  11725 1575
+$Comp
+L Jumper:Jumper_2_Bridged JP1
+U 1 1 60992B5E
+P 8455 810
+F 0 "JP1" H 8455 1005 50  0000 C CNN
+F 1 "Jumper_2_Bridged" H 8455 914 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 8455 810 50  0001 C CNN
+F 3 "~" H 8455 810 50  0001 C CNN
+	1    8455 810 
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8800 810  8655 810 
+Connection ~ 8800 810 
+Wire Wire Line
+	8975 3125 8725 3125
+Wire Wire Line
+	8725 3125 8725 2825
+Wire Wire Line
+	8925 3225 8975 3225
+Wire Wire Line
+	8925 3225 8925 3675
+Wire Wire Line
+	8375 3525 8375 4925
+Wire Wire Line
+	8975 3425 8275 3425
+Wire Wire Line
+	8275 3425 8275 4525
+Wire Wire Line
+	8175 3325 8975 3325
+Wire Wire Line
+	8375 3525 8975 3525
+Wire Wire Line
+	8255 810  8020 810 
+$Comp
+L power:+3.3V #PWR0108
+U 1 1 609F3650
+P 8020 810
+F 0 "#PWR0108" H 8020 660 50  0001 C CNN
+F 1 "+3.3V" H 8035 983 50  0000 C CNN
+F 2 "" H 8020 810 50  0001 C CNN
+F 3 "" H 8020 810 50  0001 C CNN
+	1    8020 810 
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC

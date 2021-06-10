@@ -1,5 +1,9 @@
 import requests, glob, os, shutil, ast
 
+####
+##This file handles all functions performed exclusively on the Raspberry Pis side
+####
+
 ###
 #Parameters for transmission to server
 #If left blank transmission will be ignored

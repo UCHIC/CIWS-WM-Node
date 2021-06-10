@@ -2,7 +2,13 @@ import Logger
 import datetime
 import piHandler
 
+####
+##This file is a wrapper for the logger.c module
+####
 
+##
+#Handles the initialization of the serial busses and commmunication gpio
+##
 def initialize(firstBoot=False):
 	Logger.init()  # Initialize the Logger Python module.
 	if firstBoot:

@@ -32,14 +32,14 @@ while(True):											# Run LoggerShell until the exit flag is set
 				raw_adc -= 4095
 			print("> Battery voltage:", round(raw_adc * .0075, 2))						# Get the battery voltage and display it
 		except:
-			print("> Battery voltage: <ADC Error>")
+			print("> Battery voltage: <ADC Error>")								#If exception print error
 
-	if(userInput == "internet-status"):
+	if(userInput == "internet-status"):									# User Option: Check if internet is connected
 		try:
-			requests.get('https://engineering.usu.edu/cee/people/faculty/horsburgh-jeff', timeout=5)
-			print('> Internet Status: Connected')
+			requests.get('https://engineering.usu.edu/cee/people/faculty/horsburgh-jeff', timeout=5)	#Try to reach Jeffs page
+			print('> Internet Status: Connected')								#Print that internet is connected
 		except:
-			print('> Internet Status: Not Connected')
+			print('> Internet Status: Not Connected')							#Print not connected
 
 	elif(userInput == "start-logging"):									# User Option: Start a logging session										# Extract the output
 		if arduinoHandler.getArduinoReport()['isLogging']:										# If the logging field is 1

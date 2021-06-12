@@ -1,9 +1,11 @@
 ## Instructions:</br></br>
 1. Connect your Raspberry Pi to the internet. 
-2. Type `sudo apt-get update` into the command line and hit enter.
-3. Type `sudo apt-get install git` into the command line and hit enter.
-4. Type `git clone ` into the command line and hit enter.
-5. Then add this folder (`Software`) to the directory `/home/pi` of your Raspberry Pi 3.</br>
+2. Type `sudo apt-get update` into the command line and hit enter. This updates your pi.
+3. Type `sudo apt-get install git` into the command line and hit enter. This installs git onto your pi.
+4. Type `git clone https://github.com/UCHIC/CIWS-WM-Node.git` into the command line and hit enter. Using git this clones this repository onto your pi.
+5. Type `mv CIWS-WM-NODE/Software/ Software` into the command line and hit enter. This moves the Software directory into your home directory.
+6. Type `cd Software` into the command line and hit enter. This changes the Software directory to your working directory.
+
 From the `Software` directory, run the following commands:
 ```
 chmod +x setup.sh
@@ -37,5 +39,3 @@ Most of the Software functionality of the WM-Node device is described in the fil
 - `setup.py`: Builds Python module Logger from `logger.c`.
 - `setup.sh`: Sets up Raspberry Pi device using the files in this directory.
 - `uuidcopy.c`: Copies the value for the field `root=PARTUUID=` from the original `cmdline.txt` and stores it in the new `cmdline.txt`.
-
-WARNING: This code is still under development and not quite ready for use</br>

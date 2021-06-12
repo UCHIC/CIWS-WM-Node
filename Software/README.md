@@ -2,7 +2,8 @@
 1. Connect your Raspberry Pi to the internet. 
 2. Type `sudo apt-get update` into the command line and hit enter.
 3. Type `sudo apt-get install git` into the command line and hit enter.
-4. Then add this folder (`Software`) to the directory `/home/pi` of your Raspberry Pi 3.</br>
+4. Type `git clone ` into the command line and hit enter.
+5. Then add this folder (`Software`) to the directory `/home/pi` of your Raspberry Pi 3.</br>
 From the `Software` directory, run the following commands:
 ```
 chmod +x setup.sh

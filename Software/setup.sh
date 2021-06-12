@@ -83,10 +83,10 @@ then
 	mv /home/pi/.bashrc /home/pi/.bashrc.original
 fi
 
-cp cmdline.txt /boot
-cp config.txt /boot
-cp rc.local /etc
-cp bashrc /home/pi/.bashrc
+cp setup/cmdline.txt /boot
+cp setup/config.txt /boot
+cp setup/rc.local /etc
+cp setup/bashrc /home/pi/.bashrc
 
 gcc uuidcopy.c -o uuidcopy
 ./uuidcopy

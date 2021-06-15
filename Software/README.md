@@ -33,5 +33,3 @@ Most of the Software functionality of the WM-Node device is described in the fil
 - `setup.py`: Builds Python module Logger from `logger.c`.
 - `setup.sh`: Sets up Raspberry Pi device using the files in this directory.
 - `uuidcopy.c`: Copies the value for the field `root=PARTUUID=` from the original `cmdline.txt` and stores it in the new `cmdline.txt`.
-
-WARNING: This code is still under development and not quite ready for use</br>

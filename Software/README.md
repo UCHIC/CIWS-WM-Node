@@ -1,4 +1,5 @@
 ## Instructions:</br></br>
+NOTE: Only the Raspberry Pi 3 Model B V1.2 has been verified to work.
 1. Connect your Raspberry Pi to the internet. 
 2. Type `sudo apt-get update` into the command line and hit enter. This updates your pi.
 3. Type `sudo apt-get install git` into the command line and hit enter. This installs git onto your pi.

@@ -1,5 +1,11 @@
-## Instructions for Configuring a Raspberry Pi to Operate as a CIWS-WM-Node</br></br>
-First connect your Raspberry Pi to the internet. Then add this folder (`Software`) to the directory `/home/pi` of your Raspberry Pi 3.</br>
+## Instructions:</br></br>
+1. Connect your Raspberry Pi to the internet. 
+2. Type `sudo apt-get update` into the command line and hit enter. This updates your pi.
+3. Type `sudo apt-get install git` into the command line and hit enter. This installs git onto your pi.
+4. Type `git clone https://github.com/UCHIC/CIWS-WM-Node.git` into the command line and hit enter. Using git this clones this repository onto your pi.
+5. Type `mv CIWS-WM-NODE/Software/ Software` into the command line and hit enter. This moves the Software directory into your home directory.
+6. Type `cd Software` into the command line and hit enter. This changes the Software directory to your working directory.
+
 From the `Software` directory, run the following commands:
 ```
 chmod +x setup.sh

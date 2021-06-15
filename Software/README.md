@@ -1,4 +1,4 @@
-## Instructions:</br></br>
+## Instructions for Configuring a Raspberry Pi to Operate as a CIWS-WM-Node</br></br>
 First connect your Raspberry Pi to the internet. Then add this folder (`Software`) to the directory `/home/pi` of your Raspberry Pi 3.</br>
 From the `Software` directory, run the following commands:
 ```

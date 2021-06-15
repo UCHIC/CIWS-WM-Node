@@ -64,7 +64,8 @@ def writeConfig(key, value):
 	try:
 		dict = ast.literal_eval(f.read())		#Converts file contents to a discionary
 	except:
-		dict = {'ID': '', 'Site': '', 'Period': '', 'meterResolution': '', 'Transmission': '3', 'Storage': '3'}	#If fail create dictionary 
+		dict = {'ID': '', 'Site': '', 'Period': '', 'meterResolution': '', 'Transmission': '1', 'Storage': '1'}	#If fail create dictionary 
+
 	finally:
 		f.close()	#Close file
 	dict[key] = value	#Write new value to dictionary

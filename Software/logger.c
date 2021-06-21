@@ -46,6 +46,8 @@ static PyObject* init(PyObject* self, PyObject* args)
 
 static PyObject* initPins(PyObject* self, PyObject* args)
 {
+	wiringPiSetupGpio();			// Setup the wiringPi library to use Broadcom GPIO numbers.
+	
 	pinMode(ROM_BUSY, OUTPUT);		// ROM_BUSY Pin output low
 	digitalWrite(ROM_BUSY, LOW);
 

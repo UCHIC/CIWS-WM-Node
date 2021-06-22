@@ -23,14 +23,7 @@ def writeEEPROMToFile():
 	Logger.init()		#Initialize the spi and uart data busses
 	tup = Logger.loadData()	#Read the data from the EEPROM chip
 	Logger.setRomFree()  	#Tell the AVR datalogger that the EEPROM chip is no longer in use.
-	file = "/home/pi/Software/data/site" +
-		str(piHandler.readConfig('Site')).zfill(4) + "_20" + 
-		str(tup[1]).zfill(2) + 
-		str(tup[2]).zfill(2) + 
-		str(tup[3]).zfill(2) + 'T' + 
-		str(tup[4]).zfill(2) + 
-		str(tup[5]).zfill(2) + 
-		str(tup[6]).zfill(2) + ".csv"	#Create file name for new data
+	file = "/home/pi/Software/data/site" + str(piHandler.readConfig('Site')).zfill(4) + "_20" + str(tup[1]).zfill(2) + str(tup[2]).zfill(2) + str(tup[3]).zfill(2) + 'T' + str(tup[4]).zfill(2) + str(tup[5]).zfill(2) + str(tup[6]).zfill(2) + ".csv"	#Create file name for new data
 	f = open(file,'w+')			#Open file in write mode
 	f.write('Site #: ' + str(piHandler.readConfig('Site')) + '\n')	#Write the site number to the file
 	f.write('Datalogger ID #: ' + str(piHandler.readConfig('ID')) + '\n')	#Write the datalogging id to the file

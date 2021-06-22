@@ -12,6 +12,8 @@ From the `Software` directory, run the following commands:
 chmod +x setup.sh
 sudo ./setup.sh
 ```
+At a minimum, be sure to `set-timer-resolution` before attempting to log.
+
 You can now use the `Logger` module in Python. Note that this was built with Python 3.7.</br></br>
 The following dependencies should be automatically installed by running `setup.sh` on the Raspberry Pi, assuming the Raspberry Pi is connected to the internet.
 ```

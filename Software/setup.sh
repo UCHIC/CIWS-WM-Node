@@ -88,6 +88,8 @@ cp setup/config.txt /boot
 cp setup/rc.local /etc
 cp setup/bashrc /home/pi/.bashrc
 
+sudo chmod +x /etc/rc.local
+
 gcc uuidcopy.c -o uuidcopy
 ./uuidcopy
 rm -f uuidcopy

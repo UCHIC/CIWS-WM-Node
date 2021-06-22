@@ -32,7 +32,7 @@ while(True):											# Run LoggerShell until the exit flag is set
 				raw_adc -= 4095
 			print("> Battery voltage:", round(raw_adc * .0075, 2))						# Get the battery voltage and display it
 		except:
-			print("> Battery voltage: <ADC Error>")								#If exception print error
+			print("> Battery voltage: <ADC Error> Note: Have you enabled I2C in raspi-config?")								#If exception print error
 
 	elif(userInput == "internet-status"):
 		try:

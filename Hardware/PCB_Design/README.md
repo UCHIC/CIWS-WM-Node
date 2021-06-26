@@ -8,7 +8,7 @@ The `.csv` file and `.zip` files are used for manufaturing the devices. The `.zi
 # Instructions for setting up the PCB
 1. Remove the jumper on the `EEPROM Power` pins.
 2. Connect the micro usb port to your computer and turn the `PWR` switch ON.
-3. Connect your computer to the 6 header pins with an AVR ISP(make sure to plug in the ribbon cable the right direction). (A suitable AVR ISP is referenced in the link below)
+3. Connect your computer to the 6 header pins with an AVR ISP (Make sure to plug in the ribbon cable the right direction). (A suitable AVR ISP is referenced in the link below)
 4. Open up the code in the `Firmware` directory using the Arduino IDE and click on `Tools`. Select `Arduino Pro or Pro mini` as the board, `Atmega328P (3.3V 8MHZ)` as the processor, and `AVR ISP` as the programmer.
 5. Click `Burn Bootloader`. Wait for it to finish.
 6. Unplug the AVR ISP and turn the `PGRM` switch ON.

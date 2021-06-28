@@ -4,6 +4,8 @@ This repository contains hardware and software designs for a computationally-ena
 
 The data acquisition device is primarily responsible for processing magnetometer sensor data and storing flow data from the water meter. Secondarily, it controls power to the Raspberry Pi in order to conserve battery life and reduce overall power consumption. Once powered, the Raspberry Pi retreives the flow data and processes it to compute useful summaries of water use, identify water end-uses, or execute other user-defined computational code.
 
+## Structure of this Repository
+
 The 'Firmware' directory contains the firmware for the microcontroller-based data acquisition device, or Datalogger.
 
 The 'Software' directory contains the software for the Raspberry Pi.

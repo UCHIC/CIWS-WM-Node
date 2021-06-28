@@ -1,9 +1,11 @@
-## Instructions:</br></br>
-NOTE: Only the Raspberry Pi 3 Model B V1.2 has been verified to work.
+## Instructions for Configuring a Raspberry Pi
+
+NOTE: Only the Raspberry Pi 3 Model B V1.2 has been verified to work, although newer models should work as well.
+
 1. Connect your Raspberry Pi to the internet. 
-2. Type `sudo apt-get update` into the command line and hit enter. This updates your pi.
+2. Type `sudo apt-get update` into the command line and hit enter. This updates software packages available on your pi.
 3. Type `sudo apt-get install git` into the command line and hit enter. This installs git onto your pi.
-4. Type `git clone https://github.com/UCHIC/CIWS-WM-Node.git` into the command line and hit enter. Using git this clones this repository onto your pi.
+4. Type `git clone https://github.com/UCHIC/CIWS-WM-Node.git` into the command line and hit enter. Using git, this clones this repository onto your pi.
 5. Type `mv CIWS-WM-NODE/Software/ Software` into the command line and hit enter. This moves the Software directory into your home directory.
 6. Type `cd Software` into the command line and hit enter. This changes the Software directory to your working directory.
 
@@ -25,7 +27,9 @@ python3-pandas
 python3-seaborn
 pyhton3-sklearn
 ```
-## Overview:</br></br>
+
+## Software Overview
+
 Most of the Software functionality of the WM-Node device is described in the file `logger.c`. The C code is compiled as a Python module by the script `setup.sh`, and is used in the Python scripts in this directory.
 
 ### Files:
